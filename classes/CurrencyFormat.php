@@ -224,7 +224,7 @@ class CurrencyFormat extends DBSimpleStatic {
 	static public function getListGroupedByLang($arSort = null) {
 		return self::getInstance()->getListGroupedByLang($arSort);
 	}
-	static public function formatPrice($priceValue, $currencyCode = null, $langID = null, $arFormat = null) {
+	static public function formatPrice($priceValue, $currencyCode = null, $langID = LANGUAGE_ID, $arFormat = null) {
 		return self::getInstance()->formatPrice($priceValue, $currencyCode, $langID, $arFormat);
 	}
 }

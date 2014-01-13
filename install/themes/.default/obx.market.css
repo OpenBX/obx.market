@@ -47,6 +47,13 @@
 	box-shadow: 0px 0px 1px 2px grey;
 }
 
+#obx_market_settings input[type=button],
+#obx_market_settings button,
+#obx_market_settings input[type=button]:active,
+#obx_market_settings button:active {
+	height: 29px;
+}
+
 
 /********* MENU Bitrix < 12 ***********/
 #button_obx_market {

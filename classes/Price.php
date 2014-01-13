@@ -365,7 +365,7 @@ SQL;
 					$this->addWarning(GetMessage("OBX_MARKET_PRICE_WARNING_1"), 1);
 					return $priceValue;
 				}
-				wd($arPriceList, __METHOD__ . '(): $arPriceList');
+				//d($arPriceList, __METHOD__ . '(): $arPriceList');
 				$arFormat = array(
 					"FORMAT" => $this->_arFormatPriceCache[$priceCode . $priceID] = $arPriceList[0]["CURRENCY_FORMAT"],
 					"DEC_PRECISION" => $this->_arFormatPriceCache[$priceCode . $priceID] = $arPriceList[0]["DEC_PRECISION"],

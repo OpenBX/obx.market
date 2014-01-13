@@ -281,12 +281,10 @@ if( count($arErrors)>0 ) {
 	<?if(false):?></table><?endif?>
 
 	<?
-	$TabControl->Buttons(
-		array(
-			"disabled" => false,
-			"back_url" => "obx_market_order_props.php",
-		)
-	);
+	$TabControl->Buttons(array(
+		"disabled" => false,
+		"back_url" => "obx_market_order_props.php",
+	));
 	$TabControl->End();
 	?>
 </form>

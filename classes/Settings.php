@@ -12,38 +12,14 @@
 
 namespace OBX\Market;
 
-use OBX\Core\Tools;
-use OBX\Core\CMessagePool;
-use OBX\Core\CMessagePoolStatic;
-use OBX\Core\CMessagePoolDecorator;
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
-use OBX\Core\DBSResult;
+use OBX\Core\MessagePoolDecorator;
 
-use OBX\Market\Currency;
 use OBX\Market\Currency as OBX_Currency	;
-use OBX\Market\CurrencyDBS;
-use OBX\Market\CurrencyDBS as OBX_CurrencyDBS;
-use OBX\Market\CurrencyFormat;
 use OBX\Market\CurrencyFormat as OBX_CurrencyFormat;
-use OBX\Market\CurrencyFormatDBS;
-use OBX\Market\CurrencyFormatDBS as OBX_CurrencyFormatDBS;
-use OBX\Market\Order;
-use OBX\Market\OrderDBS;
-use OBX\Market\Order as OBX_Order;
-use OBX\Market\OrderDBS as OBX_OrderDBS;
-use OBX\Market\OrderStatusDBS;
-use OBX\Market\OrderStatusDBS as OBX_OrderStatusDBS;
-use OBX\Market\OrderPropertyDBS;
-use OBX\Market\OrderPropertyDBS as OBX_OrderPropertyDBS;
-use OBX\Market\OrderPropertyValuesDBS;
-use OBX\Market\OrderPropertyValuesDBS as OBX_OrderPropertyValuesDBS;
-use OBX\Market\OrderPropertyEnumDBS;
-use OBX\Market\OrderPropertyEnumDBS as OBX_OrderPropertyEnumDBS;
 
 IncludeModuleLangFile(__FILE__);
 
-abstract class Settings extends CMessagePoolDecorator {
+abstract class Settings extends MessagePoolDecorator {
 
 	final protected function __construct() {
 	}
@@ -98,11 +74,11 @@ abstract class Settings extends CMessagePoolDecorator {
 	protected $listTableColumns = 1;
 
 	public function showMessages($colspan = -1) {
-		$colspan == intval($colspan);
+		$colspan = intval($colspan);
 		if ($colspan < 0) {
 			$colspan = $this->listTableColumns;
 		}
-		$arMessagesList = $this->getMessages();
+		$arMessagesList = $this->getNotices();
 		if (count($arMessagesList) > 0) {
 			?>
 		<tr>
@@ -116,7 +92,7 @@ abstract class Settings extends CMessagePoolDecorator {
 	}
 
 	public function showWarnings($colspan = -1) {
-		$colspan == intval($colspan);
+		$colspan = intval($colspan);
 		if ($colspan < 0) {
 			$colspan = $this->listTableColumns;
 		}
@@ -134,7 +110,7 @@ abstract class Settings extends CMessagePoolDecorator {
 	}
 
 	public function showErrors($colspan = -1) {
-		$colspan == intval($colspan);
+		$colspan = intval($colspan);
 		if ($colspan < 0) {
 			$colspan = $this->listTableColumns;
 		}
@@ -176,19 +152,15 @@ class Settings_Currency extends Settings {
 			<table class="internal" style="width:100%">
 	<tr class="heading">
 		<td class="field-name"></td>
-		<td><span class="require">*</span>&nbsp;<?=GetMessage("OBX_SETT_CURRENCY_F_CODE")?>&nbsp;<a href="#"
-																									class="help-inline">?</a>
-		</td>
+		<td><span class="require">*</span>&nbsp;<?=GetMessage("OBX_SETT_CURRENCY_F_CODE")?></td>
 		<Td><?=GetMessage("OBX_SETT_CURRENCY_F_SORT")?></Td>
-		<td><?=GetMessage("OBX_SETT_CURRENCY_F_IS_DEFAULT")?>&nbsp;<a href="#" class="help-inline">?</a></td>
+		<td><?=GetMessage("OBX_SETT_CURRENCY_F_IS_DEFAULT")?></td>
 		<td><?=GetMessage("OBX_SETT_CURRENCY_F_LANG")?></td>
 		<td><span class="require">*</span>&nbsp;<?=GetMessage("OBX_SETT_CURRENCY_F_NAME")?></td>
-		<td><span class="require">*</span>&nbsp;<?=GetMessage("OBX_SETT_CURRENCY_F_FORMAT")?>&nbsp;<a href="#"
-																									  class="help-inline">?</a>
-		</td>
-		<td><?=GetMessage("OBX_SETT_CURRENCY_F_THOUS_SEP")?>&nbsp;<a href="#" class="help-inline">?</a></td>
-		<td><?=GetMessage("OBX_SETT_CURRENCY_F_DEC_POINT")?>&nbsp;<a href="#" class="help-inline">?</a></td>
-		<td><?=GetMessage("OBX_SETT_CURRENCY_F_PRECISION")?>&nbsp;<a href="#" class="help-inline">?</a></td>
+		<td><span class="require">*</span>&nbsp;<?=GetMessage("OBX_SETT_CURRENCY_F_FORMAT")?></td>
+		<td><?=GetMessage("OBX_SETT_CURRENCY_F_THOUS_SEP")?></td>
+		<td><?=GetMessage("OBX_SETT_CURRENCY_F_DEC_POINT")?></td>
+		<td><?=GetMessage("OBX_SETT_CURRENCY_F_PRECISION")?></td>
 		<td><?=GetMessage("OBX_SETT_CURRENCY_BTN_DELETE")?></label></td>
 	</tr>
 	<? if (count($arCurrencyFormatList) > 0): ?>
@@ -261,25 +233,21 @@ class Settings_Currency extends Settings {
 				<? endforeach ?>
 		<? endif; ?>
 
-		<tr class="replace">
-			<td colspan="<?=$this->listTableColumns?>"></td>
-		</tr>
-		<tr>
-			<td class="field-name"></td>
-			<td colspan="10"><input class="add_new_item" type="button"
-								   value="<?=GetMessage("OBX_SETT_CURRENCY_BTN_ADD_ITEM")?>"/></td>
-		</tr>
-		<tr>
-			<td colspan="<?=$this->listTableColumns?>">
-				<input type="button" id="obx_currency_btn_save" value="<?=GetMessage("OBX_SETT_CURRENCY_BTN_SAVE")?>"/>
-				<input type="button" id="obx_currency_btn_cancel"
-					   value="<?=GetMessage("OBX_SETT_CURRENCY_BTN_CANCEL")?>"/>
-			</td>
-		</tr>
-		<tr>
-			<td class="delimiter hard" colspan="<?=$this->listTableColumns?>"></td>
-		</tr>
-
+				<tr class="replace">
+					<td colspan="<?=$this->listTableColumns?>"></td>
+				</tr>
+				<tr>
+					<td class="field-name"></td>
+					<td colspan="10"><input class="add_new_item" type="button"
+										   value="<?=GetMessage("OBX_SETT_CURRENCY_BTN_ADD_ITEM")?>"/></td>
+				</tr>
+				<tr>
+					<td colspan="<?=$this->listTableColumns?>">
+						<input type="button" class="adm-btn-save" id="obx_currency_btn_save" value="<?=GetMessage("OBX_SETT_CURRENCY_BTN_SAVE")?>"/>
+						<input type="button" id="obx_currency_btn_cancel"
+							   value="<?=GetMessage("OBX_SETT_CURRENCY_BTN_CANCEL")?>"/>
+					</td>
+				</tr>
 			</table>
 		</td>
 	</tr><?
@@ -381,7 +349,7 @@ class Settings_Currency extends Settings {
 			}
 		}
 		if (count($arDeleteSuccessList) > 0) {
-			$this->addMessage(GetMessage("OBX_SETT_CURRENCY_MESSAGE_3", array(
+			$this->addNotice(GetMessage("OBX_SETT_CURRENCY_MESSAGE_3", array(
 				"#CURRENCY_LIST#" => implode(', ', $arDeleteSuccessList)
 			)), 3);
 			return true;
@@ -519,7 +487,7 @@ class Settings_Currency extends Settings {
 			}
 		}
 		if (count($arUpdateSuccessCurrencyList) > 0) {
-			$this->addMessage(GetMessage("OBX_SETT_CURRENCY_MESSAGE_2", array(
+			$this->addNotice(GetMessage("OBX_SETT_CURRENCY_MESSAGE_2", array(
 				"#CURRENCY_LIST#" => implode(', ', $arUpdateSuccessCurrencyList)
 			)), 2);
 		}
@@ -609,7 +577,7 @@ class Settings_Currency extends Settings {
 			}
 		}
 		if (strlen($strNewSuccessIDList) > 0) {
-			$this->addMessage(GetMessage("OBX_SETT_CURRENCY_MESSAGE_1", array(
+			$this->addNotice(GetMessage("OBX_SETT_CURRENCY_MESSAGE_1", array(
 				"#CURRENCY_LIST#" => $strNewSuccessIDList
 			)), 1);
 		}
@@ -624,105 +592,106 @@ class Settings_Price extends Settings {
 		$arPriceList = Price::getListArray();
 		$arCurrencyList = CurrencyFormat::getListArray(null, array("LANGUAGE_ID" => LANGUAGE_ID));?>
 	<tr>
-		<td>
-			<table class="internal" style="width:100%">
-		<tr class="heading">
-			<td class="field-name"></td>
-			<td style="width: 25px;">ID</td>
-			<td><?=GetMessage("OBX_SETT_PRICE_F_NAME")?></td>
-			<td><?=GetMessage("OBX_SETT_PRICE_F_CODE")?></td>
-			<td><?=GetMessage("OBX_SETT_PRICE_F_SORT")?></td>
-			<td><?=GetMessage("OBX_SETT_PRICE_F_CURRENCY")?></td>
-			<td><?=GetMessage("OBX_SETT_PRICE_F_GROUPS")?></td>
-			<td><?=GetMessage("OBX_SETT_PRICE_BTN_DELETE")?></td>
-		</tr>
-		<? foreach ($arPriceList as &$arPrice): ?>
-			<tr>
+	<td>
+		<table class="internal" style="width:100%">
+			<tr class="heading">
 				<td class="field-name"></td>
-				<td><?=$arPrice["ID"]?><input type="hidden" name="obx_price_update[]" value="<?=$arPrice["ID"]?>"/></td>
-				<td>
-					<input type="text" name="obx_price[<?=$arPrice["ID"]?>][name]" value="<?=$arPrice["NAME"]?>"
-						   placeholder="<?=GetMessage("OBX_SETT_PRICE_F_NAME")?>"/>
-				</td>
-				<td>
-					<input type="text" name="obx_price[<?=$arPrice["ID"]?>][code]" value="<?=$arPrice["CODE"]?>"
-						   placeholder="<?=GetMessage("OBX_SETT_PRICE_F_CODE")?>"/>
-				</td>
-				<td>
-					<input type="text" name="obx_price[<?=$arPrice["ID"]?>][sort]" value="<?=$arPrice["SORT"]?>"
-						   placeholder="<?=GetMessage("OBX_SETT_PRICE_F_SORT")?>"/>
-				</td>
-				<td>
-					<select name="obx_price[<?=$arPrice["ID"]?>][currency]">
-						<?foreach ($arCurrencyList as $arCurrency): ?>
-						<option <?//
-									?>value="<?=$arCurrency["CURRENCY"]?>"<?
-							if ($arCurrency["CURRENCY"] == $arPrice["CURRENCY"] && $arPrice["CURRENCY_LANG_ID"] == LANGUAGE_ID) {
-								?> selected="selected" <?
-							}
-							?>><?=$arCurrency["NAME"]?></option>
-						<? endforeach?>
-					</select>
-				</td>
-				<td>
-					<div class="group_container">
-						<?$curPriceGroups = Price::getGroupList($arPrice["ID"]);?>
-						<?
-						$i = 0;
-						foreach ($curPriceGroups as $groupID):?>
+				<td style="width: 25px;">ID</td>
+				<td><?=GetMessage("OBX_SETT_PRICE_F_NAME")?></td>
+				<td><?=GetMessage("OBX_SETT_PRICE_F_CODE")?></td>
+				<td><?=GetMessage("OBX_SETT_PRICE_F_SORT")?></td>
+				<td><?=GetMessage("OBX_SETT_PRICE_F_CURRENCY")?></td>
+				<td><?=GetMessage("OBX_SETT_PRICE_F_GROUPS")?></td>
+				<td><?=GetMessage("OBX_SETT_PRICE_BTN_DELETE")?></td>
+			</tr>
+			<? foreach ($arPriceList as &$arPrice): ?>
+				<tr>
+					<td class="field-name"></td>
+					<td><?=$arPrice["ID"]?><input type="hidden" name="obx_price_update[]" value="<?=$arPrice["ID"]?>"/></td>
+					<td>
+						<input type="text" name="obx_price[<?=$arPrice["ID"]?>][name]" value="<?=$arPrice["NAME"]?>"
+							   placeholder="<?=GetMessage("OBX_SETT_PRICE_F_NAME")?>"/>
+					</td>
+					<td>
+						<input type="text" name="obx_price[<?=$arPrice["ID"]?>][code]" value="<?=$arPrice["CODE"]?>"
+							   placeholder="<?=GetMessage("OBX_SETT_PRICE_F_CODE")?>"/>
+					</td>
+					<td>
+						<input type="text" name="obx_price[<?=$arPrice["ID"]?>][sort]" value="<?=$arPrice["SORT"]?>"
+							   placeholder="<?=GetMessage("OBX_SETT_PRICE_F_SORT")?>"/>
+					</td>
+					<td>
+						<select name="obx_price[<?=$arPrice["ID"]?>][currency]">
+							<?foreach ($arCurrencyList as $arCurrency): ?>
+							<option <?//
+										?>value="<?=$arCurrency["CURRENCY"]?>"<?
+								if ($arCurrency["CURRENCY"] == $arPrice["CURRENCY"] && $arPrice["CURRENCY_LANG_ID"] == LANGUAGE_ID) {
+									?> selected="selected" <?
+								}
+								?>><?=$arCurrency["NAME"]?></option>
+							<? endforeach?>
+						</select>
+					</td>
+					<td>
+						<div class="group_container">
+							<?$curPriceGroups = Price::getGroupList($arPrice["ID"]);?>
+							<?
+							$i = 0;
+							foreach ($curPriceGroups as $groupID):?>
+								<div class="group_select">
+									<select name="obx_price_ugrp[<?=$arPrice["ID"]?>][<?=$i?>]" data-price-id="<?=$arPrice["ID"]?>" data-count-id="<?=$i?>">
+										<option value="-1">(<?=GetMessage("OBX_SETT_PRICE_DEL_GROUP")?>)</option>
+										<?
+										$by = "c_sort";
+										$order = "desc";
+										$rsGroups = \CGroup::GetList($by, $order, array("ACTIVE" => "Y"));
+										while ($arGroup = $rsGroups->Fetch()):?>
+											<option <?if ($arGroup["ID"] == $curPriceGroups[$i]): ?>selected=""<? endif;?>value="<?=$arGroup["ID"]?>">[<?=$arGroup["ID"]?>] <?=$arGroup["NAME"]?></option>
+											<? endwhile;?>
+									</select>
+								</div>
+								<?
+								$i++;
+							endforeach;
+							?>
+							<?if ($i==0):?>
 							<div class="group_select">
-								<select name="obx_price_ugrp[<?=$arPrice["ID"]?>][<?=$i?>]" data-price-id="<?=$arPrice["ID"]?>" data-count-id="<?=$i?>">
+								<select name="obx_price_ugrp[<?=$arPrice["ID"]?>][<?=$i?>]">
 									<option value="-1">(<?=GetMessage("OBX_SETT_PRICE_DEL_GROUP")?>)</option>
 									<?
-									$rsGroups = \CGroup::GetList(($by = "c_sort"), ($order = "desc"), array("ACTIVE" => "Y"));
+									$by = "c_sort";
+									$order = "desc";
+									$rsGroups = \CGroup::GetList($by, $order, array("ACTIVE" => "Y"));
 									while ($arGroup = $rsGroups->Fetch()):?>
 										<option <?if ($arGroup["ID"] == $curPriceGroups[$i]): ?>selected=""<? endif;?>value="<?=$arGroup["ID"]?>">[<?=$arGroup["ID"]?>] <?=$arGroup["NAME"]?></option>
 										<? endwhile;?>
 								</select>
 							</div>
-							<?
-							$i++;
-						endforeach;
-						?>
-						<?if ($i==0):?>
-						<div class="group_select">
-							<select name="obx_price_ugrp[<?=$arPrice["ID"]?>][<?=$i?>]">
-								<option value="-1">(<?=GetMessage("OBX_SETT_PRICE_DEL_GROUP")?>)</option>
-								<?
-								$rsGroups = \CGroup::GetList(($by = "c_sort"), ($order = "desc"), array("ACTIVE" => "Y"));
-								while ($arGroup = $rsGroups->Fetch()):?>
-									<option <?if ($arGroup["ID"] == $curPriceGroups[$i]): ?>selected=""<? endif;?>value="<?=$arGroup["ID"]?>">[<?=$arGroup["ID"]?>] <?=$arGroup["NAME"]?></option>
-									<? endwhile;?>
-							</select>
+							<?endif;?>
 						</div>
-						<?endif;?>
-					</div>
-					<a href="javascript:void(0)" class="bx-action-href add-new-group"><?=GetMessage('OBX_MARKET_SETT_ADD_GROUP_ACCESS');?></a>
-				</td>
-				<td class="center">
-					<input type="checkbox" name="obx_price_delete[<?=$arPrice["ID"]?>]" value="<?=$arPrice["ID"]?>"/>
-				</td>
-			</tr>
-			<? endforeach; ?>
-		<tr class="replace">
-			<td colspan="<?=$this->listTableColumns?>"></td>
-		</tr>
-		<tr>
-			<td class="field-name"></td>
-			<td colspan="<?=$this->listTableColumns?>"><input class="add_new_item" type="button"
-								   value="<?=GetMessage("OBX_SETT_PRICE_BTN_ADD_ITEM")?>"/></td>
-		</tr>
-		<tr>
-			<td colspan="<?=$this->listTableColumns?>">
-				<input type="button" id="obx_price_btn_save" value="<?=GetMessage("OBX_SETT_PRICE_BTN_SAVE")?>"/>
-				<input type="button" id="obx_price_btn_cancel" value="<?=GetMessage("OBX_SETT_PRICE_BTN_CANCEL")?>"/>
-			</td>
-		</tr>
-		<tr>
-			<td class="delimiter hard" colspan="<?=$this->listTableColumns?>"></td>
-		</tr>
-			</table>
-		</td>
+						<a href="javascript:void(0)" class="bx-action-href add-new-group"><?=GetMessage('OBX_MARKET_SETT_ADD_GROUP_ACCESS');?></a>
+					</td>
+					<td class="center">
+						<input type="checkbox" name="obx_price_delete[<?=$arPrice["ID"]?>]" value="<?=$arPrice["ID"]?>"/>
+					</td>
+				</tr>
+				<? endforeach; ?>
+				<tr class="replace">
+					<td colspan="<?=$this->listTableColumns?>"></td>
+				</tr>
+				<tr>
+					<td class="field-name"></td>
+					<td colspan="<?=$this->listTableColumns?>"><input class="add_new_item" type="button"
+										   value="<?=GetMessage("OBX_SETT_PRICE_BTN_ADD_ITEM")?>"/></td>
+				</tr>
+				<tr>
+					<td colspan="<?=$this->listTableColumns?>">
+						<input type="button" class="adm-btn-save" id="obx_price_btn_save" value="<?=GetMessage("OBX_SETT_PRICE_BTN_SAVE")?>"/>
+						<input type="button" id="obx_price_btn_cancel" value="<?=GetMessage("OBX_SETT_PRICE_BTN_CANCEL")?>"/>
+					</td>
+				</tr>
+		</table>
+	</td>
 	</tr>
 
 	<?
@@ -827,7 +796,7 @@ class Settings_Price extends Settings {
 
 		}
 		if (strlen($strUpdateSuccessID) > 0) {
-			$this->addMessage(GetMessage("OBX_SETT_PRICE_MESSAGE_2", array(
+			$this->addNotice(GetMessage("OBX_SETT_PRICE_MESSAGE_2", array(
 				"#ID_LIST#" => $strUpdateSuccessID
 			)), 2);
 		}
@@ -869,7 +838,7 @@ class Settings_Price extends Settings {
 			}
 		}
 		if (strlen($strNewSuccessID) > 0) {
-			$this->addMessage(GetMessage("OBX_SETT_PRICE_MESSAGE_1", array(
+			$this->addNotice(GetMessage("OBX_SETT_PRICE_MESSAGE_1", array(
 				"#ID_LIST#" => $strNewSuccessID
 			)), 1);
 		}
@@ -890,7 +859,7 @@ class Settings_Catalog extends Settings {
 	<input type="hidden" name="obx_ecom_iblock_save" value="Y"/>
 	<tr>
 		<td colspan="<?=$this->listTableColumns?>">
-			<input type="button" class="obx_ecom_iblock_save" value="<?=GetMessage("OBX_SETT_CATALOG_B_SAVE")?>"/>
+			<input type="button" class="adm-btn-save obx_ecom_iblock_save" value="<?=GetMessage("OBX_SETT_CATALOG_B_SAVE")?>"/>
 			<input type="button" class="obx_ecom_iblock_cancel" value="<?=GetMessage("OBX_SETT_CATALOG_B_CANCEL")?>"/>
 		</td>
 	</tr>
@@ -1025,12 +994,9 @@ class Settings_Catalog extends Settings {
 			</tr>
 	<tr>
 		<td colspan="<?=$this->listTableColumns?>">
-			<input type="button" class="obx_ecom_iblock_save" value="<?=GetMessage("OBX_SETT_CATALOG_B_SAVE")?>"/>
+			<input type="button" class="adm-btn-save obx_ecom_iblock_save" value="<?=GetMessage("OBX_SETT_CATALOG_B_SAVE")?>"/>
 			<input type="button" class="obx_ecom_iblock_cancel" value="<?=GetMessage("OBX_SETT_CATALOG_B_CANCEL")?>"/>
 		</td>
-	</tr>
-	<tr>
-		<td class="delimiter hard" colspan="<?=$this->listTableColumns + 1?>"></td>
 	</tr>
 			</table>
 		</td>

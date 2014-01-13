@@ -183,6 +183,7 @@ if ($REQUEST_METHOD == "POST" // проверка метода вызова ст
 
 if ($ID > 0) {
 	$arOrder = $Order->getFields();
+	$arSummary = $Order->getSummary(true);
 	$arOrderItems = $Order->getItems();
 }
 if (array_key_exists('ID', $arOrder) && $arOrder['ID'] > 0) {
@@ -446,15 +447,8 @@ $TabControl->BeginNextTab();
 			</tr>
 			<?
 			$i = 1;
-			$summaryCost = 0;
-			$summaryWeight = 0;
-			$summaryQuant = 0;
 			$arItemsInOrderJSON = array();
-
 			foreach ($arOrderItems as $arItem) {
-				$summaryCost+= floatval($arItem['PRICE_VALUE']) * floatval($arItem['QUANTITY']);
-				$summaryWeight+= floatval($arItem['WEIGHT']);
-				$summaryQuant+= floatval($arItem['QUANTITY']);
 				$arItemsInOrderJSON[$arItem['PRODUCT_ID']] = floatVal($arItem['QUANTITY']);
 				?>
 
@@ -516,15 +510,15 @@ $TabControl->BeginNextTab();
 
 			<tr>
 				<td><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY_COST")?></td>
-				<td><?=$summaryCost?></td>
+				<td><?=$arSummary['TOTAL_COST_FORMATTED']?></td>
 			</tr>
 			<tr>
 				<td><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY_WEIGHT")?></td>
-				<td><?=$summaryWeight?></td>
+				<td><?=$arSummary['WEIGHT']?></td>
 			</tr>
 			<tr>
 				<td><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY_QUANTITY")?></td>
-				<td><?=$summaryQuant?></td>
+				<td><?=$arSummary['ITEMS_COUNT']?></td>
 			</tr>
 		</table>
 	</td>

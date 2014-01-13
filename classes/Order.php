@@ -12,15 +12,15 @@
 
 namespace OBX\Market;
 
-use \OBX\Core\CMessagePoolDecorator;
+use \OBX\Core\MessagePoolDecorator;
 
 IncludeModuleLangFile(__FILE__);
 
 
-class Order extends CMessagePoolDecorator {
+class Order extends MessagePoolDecorator {
 
 	/**
-	 * @var null|Order
+	 * @var null|OrderDBS
 	 */
 	protected $_OrderDBS = null;
 
@@ -59,10 +59,20 @@ class Order extends CMessagePoolDecorator {
 	 */
 	protected $_CIBlockPropertyPriceDBS = null;
 
+	/**
+	 * @var Basket
+	 */
 	protected $_Basket = null;
 
 	protected $_arOrder = array();
 	protected $_bFieldsChanged = true;
+
+	protected $_productCount = null;
+	protected $_itemsCount = 0;
+	protected $_costValue = 0;
+	protected $_costTotalValue = 0;
+	protected $_weightValue = 0;
+	protected $_discountValue = 0;
 
 	// Кострутор объекта из БД или из ID заказа
 	protected function __construct() {
@@ -75,7 +85,7 @@ class Order extends CMessagePoolDecorator {
 		$this->_EComIBlockDBS = ECommerceIBlockDBS::getInstance();
 		$this->_PriceDBS = PriceDBS::getInstance();
 		$this->_CIBlockPropertyPriceDBS = CIBlockPropertyPriceDBS::getInstance();
-		//$this->_Basket = Basket::getByOrderID();
+		//$this->_Basket = _Basket::getByOrderID();
 	}
 
 	protected function __clone() {
@@ -182,22 +192,35 @@ class Order extends CMessagePoolDecorator {
 	 * @return bool
 	 */
 	protected function read($orderID) {
+		$arOrderSelect = array(
+			'DATE_CREATED',
+			'ID',
+			'STATUS_ID',
+			'TIMESTAMP_X',
+			'USER_ID',
+			'CURRENCY'
+		);
+		$arOrderFilter = null;
 		if ($orderID instanceof OrderDBResult) {
 			$arOrder = $orderID->Fetch();
 			if (isset($arOrder['ID'])) {
-				$arOrder = $this->_OrderDBS->getByID($arOrder['ID']);
+				$arOrderFilter = array('ID' => $orderID['ID']);
 			}
 		} elseif (is_numeric($orderID)) {
-			$arOrder = $this->_OrderDBS->getByID($orderID);
+			$arOrderFilter = array('ID' => $orderID);
 		} elseif (!empty($orderID) && is_array($orderID)) {
 			if (isset($orderID['ID']) && intval($orderID['ID']) > 0) {
-				$arOrder = $this->_OrderDBS->getByID($orderID['ID']);
+				$arOrderFilter = array('ID' => $orderID['ID']);
 			}
 		}
 
-		if (empty($arOrder) || !is_array($arOrder)) {
+		$arOrderList = $this->_OrderDBS->getListArray(null, $arOrderFilter, null, null, $arOrderSelect);
+
+
+		if (empty($arOrderList) || !is_array($arOrderList)) {
 			return false;
 		}
+		$arOrder = $arOrderList[0];
 
 		$this->_arOrder = $arOrder;
 		$this->_bFieldsChanged = false;
@@ -397,7 +420,22 @@ class Order extends CMessagePoolDecorator {
 	 * @return array
 	 */
 	public function getItems() {
-		return $this->_BasketItemDBS->getListArray(array('ID' => 'ASC'), array('ORDER_ID' => $this->_arOrder['ID']));
+		$arItemsList = $this->_BasketItemDBS->getListArray(array('ID' => 'ASC'), array('ORDER_ID' => $this->_arOrder['ID']));
+		$this->_productCount = 0;
+		$this->_itemsCount = 0;
+		$this->_costValue = 0;
+		$this->_costTotalValue = 0;
+		$this->_discountValue = 0;
+		$this->_weightValue = 0;
+		foreach($arItemsList as &$arItem) {
+			$this->_productCount++;
+			$this->_itemsCount += floatval($arItem['QUANTITY']);
+			$this->_costValue += floatval($arItem['PRICE_VALUE']);
+			$this->_costTotalValue += floatval($arItem['TOTAL_PRICE_VALUE']);
+			$this->_discountValue += floatval($arItem['DISCOUNT_VALUE']);
+			$this->_weightValue += floatval($arItem['WEIGHT']);
+		}
+		return $arItemsList;
 	}
 
 	/**
@@ -517,15 +555,37 @@ class Order extends CMessagePoolDecorator {
 			$bSuccess = false;
 		}
 		$this->_bFieldsChanged = true;
-
+		// Сбратываем кеш summary данных
+		$this->_productCount = null;
 		return $bSuccess;
 	}
 
-	/**
-	 * @param bool $delivery
-	 */
-	public function getOrderCost($delivery = true) {
-
+	public function getSummary($bFormatValues = false) {
+		if($this->_productCount === null) {
+			// Получаем summary данные
+			$this->getItems();
+		}
+		if(true === $bFormatValues) {
+			return array(
+				'PRODUCT_COUNT' => $this->_productCount,
+				'ITEMS_COUNT' => $this->_itemsCount,
+				'COST' => $this->_costValue,
+				'COST_FORMATTED' => CurrencyFormat::formatPrice($this->_costValue, $this->_arOrder['CURRENCY']),
+				'TOTAL_COST' => $this->_costTotalValue,
+				'TOTAL_COST_FORMATTED' => CurrencyFormat::formatPrice($this->_costTotalValue, $this->_arOrder['CURRENCY']),
+				'DISCOUNT' => $this->_discountValue,
+				'DISCOUNT_FORMATTED' => CurrencyFormat::formatPrice($this->_discountValue, $this->_arOrder['CURRENCY']),
+				'WEIGHT' => $this->_weightValue
+			);
+		}
+		return array(
+			'PRODUCT_COUNT' => $this->_productCount,
+			'ITEMS_COUNT' => $this->_itemsCount,
+			'COST' => $this->_costValue,
+			'TOTAL_COST' => $this->_costTotalValue,
+			'DISCOUNT' => $this->_discountValue,
+			'WEIGHT' => $this->_weightValue
+		);
 	}
 
 	/**
