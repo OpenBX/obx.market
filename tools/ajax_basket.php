@@ -1,11 +1,5 @@
 <?php
-
-use OBX\Core\Tools;
 use OBX\Market\Basket;
-use OBX\Market\BasketList;
-use OBX\Market\Price;
-use OBX\Market\CurrencyFormatDBS;
-
 
 require($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_before.php');
 IncludeModuleLangFile(__FILE__);
