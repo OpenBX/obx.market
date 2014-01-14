@@ -45,11 +45,16 @@ if (0 < intval($arCurrentValues["IBLOCK_ID"]))
 	$rsProp = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("IBLOCK_ID"=>$arCurrentValues["IBLOCK_ID"], "ACTIVE"=>"Y"));
 	while ($arr=$rsProp->Fetch())
 	{
-		if($arr["PROPERTY_TYPE"] != "F")
+		$arr['CODE'] = trim($arr['CODE']);
+		if(empty($arr['CODE'])) {
+			$arr['CODE'] = $arr['ID'];
+		}
+		if($arr["PROPERTY_TYPE"] != "F") {
 			$arProperty[$arr["CODE"]] = "[".$arr["CODE"]."] ".$arr["NAME"];
-
-		if($arr["PROPERTY_TYPE"] == "N")
+		}
+		if($arr["PROPERTY_TYPE"] == "N") {
 			$arProperty_N[$arr["CODE"]] = "[".$arr["CODE"]."] ".$arr["NAME"];
+		}
 	}
 }
 $arProperty_LNS = $arProperty;
