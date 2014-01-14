@@ -110,7 +110,7 @@ if(typeof(OBX.Market) == 'undefined') {
 				$thous_sep.attr('value', $thous_sep.attr('data-value'));
 				$thous_sep.removeAttr('readonly');
 			}
-		}
+		};
 		var $thousSep = $parentArg.find('input.thous_sep_space');
 		$thousSep.on('change', checkThusSepSpaceHandler);
 		$thousSep.each(checkThusSepSpaceHandler);
@@ -161,7 +161,7 @@ if(typeof(OBX.Market) == 'undefined') {
 		}
 		var $replaceRow = $currencyContainer.find('tr.replace');
 		var sNewRow = tmplNewCurrencyRow;
-		for(field in PlaceHolders) {
+		for(var field in PlaceHolders) {
 			sNewRow = sNewRow.replace(new RegExp('\\$'+field, 'g'), PlaceHolders[field]);
 		}
 		$replaceRow.replaceWith(sNewRow);
