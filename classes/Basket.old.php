@@ -11,13 +11,9 @@
 
 IncludeModuleLangFile(__FILE__);
 
-use OBX\Core\Tools;
-use OBX\Core\CMessagePoolStatic;
-use OBX\Core\CMessagePoolDecorator;
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\MessagePoolDecorator;
 
-class OBX_BasketOLD extends CMessagePoolDecorator {
+class OBX_BasketOLD extends MessagePoolDecorator {
 
 	// Код цены
 	const pricePropertyCodeDefault = 'PRICE';

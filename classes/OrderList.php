@@ -15,8 +15,6 @@
 
 namespace OBX\Market;
 
-use OBX\Core\Tools;
-use OBX\Core\CMessagePoolStatic;
 use OBX\Core\DBSimple;
 use OBX\Core\DBSimpleStatic;
 

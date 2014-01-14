@@ -10,13 +10,8 @@
 
 namespace OBX\Market;
 
-use OBX\Core\Tools;
-use OBX\Core\CMessagePool;
-use OBX\Core\CMessagePoolStatic;
-use OBX\Core\CMessagePoolDecorator;
 use OBX\Core\DBSimple;
 use OBX\Core\DBSimpleStatic;
-use OBX\Core\DBSResult;
 
 IncludeModuleLangFile(__FILE__);
 class OrderPropertyDBS extends DBSimple

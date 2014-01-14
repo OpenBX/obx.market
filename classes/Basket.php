@@ -11,9 +11,7 @@
 namespace OBX\Market;
 
 use OBX\Core\Tools;
-use OBX\Core\CMessagePoolStatic;
-use OBX\Core\CMessagePoolDecorator;
-use OBX\Core\DBSimple;
+use OBX\Core\MessagePoolDecorator;
 use OBX\Core\DBSResult;
 
 IncludeModuleLangFile(__FILE__);
@@ -31,7 +29,7 @@ IncludeModuleLangFile(__FILE__);
  * В дальнейшем, когда будет механизм курса валют, просто делать пересчет по курсу.
  */
 
-class Basket extends CMessagePoolDecorator
+class Basket extends MessagePoolDecorator
 {
 	const COOKIE_NAME = 'OBX_BASKET_HASH';
 

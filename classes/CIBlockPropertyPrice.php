@@ -10,15 +10,9 @@
 
 namespace OBX\Market;
 
-use OBX\Core\Tools;
-use OBX\Core\CMessagePoolStatic;
 use OBX\Core\DBSimple;
 use OBX\Core\DBSimpleStatic;
 use OBX\Core\DBSResult;
-
-use OBX\Market\Price;
-use OBX\Market\PriceDBS;
-use OBX\Market\ECommerceIBlock;
 
 IncludeModuleLangFile(__FILE__);
 

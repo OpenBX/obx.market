@@ -1,12 +1,7 @@
 <?php
 
-use OBX\Core\Tools;
 use OBX\Market\Basket;
-use OBX\Market\BasketList;
-use OBX\Market\Price;
-use OBX\Market\CurrencyFormatDBS;
 use OBX\Market\Order;
-use OBX\Market\OrderList;
 
 //Заголовки для предотвращения кеширования и указания типа данных JSON
 header('Cache-Control: no-cache, must-revalidate');
@@ -76,7 +71,6 @@ else {
 			$newOrderID = $NewOrder->getID();
 
 			$OrderBasket = Basket::getByOrderID($newOrderID);
-
 			$OrderBasket->mergeBasket($CurrentBasket, true);
 			unset($CurrentBasket);
 

@@ -7,13 +7,15 @@ use OBX\Market\Price;
 use OBX\Market\CurrencyFormatDBS;
 
 
-//Заголовки для предотвращения кеширования и указания типа данных JSON
-header('Cache-Control: no-cache, must-revalidate');
-
-header('Content-type: application/json; charset: UTF-8');
-
 require($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_before.php');
 IncludeModuleLangFile(__FILE__);
+/** @global \CMain $APPLICATION */
+$APPLICATION->RestartBuffer();
+
+//Заголовки для предотвращения кеширования и указания типа данных JSON
+header('Cache-Control: no-cache, must-revalidate');
+header('Content-type: application/json; charset: UTF-8');
+
 
 $arJSON = array(
 	'messages' => array()

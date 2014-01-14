@@ -10,12 +10,9 @@
 
 namespace OBX\Market;
 
-use OBX\Core\Tools;
-use OBX\Core\CMessagePoolStatic;
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\MessagePoolStatic;
 
-class OrderProfile extends CMessagePoolStatic
+class OrderProfile extends MessagePoolStatic
 {
 	// Возвращает профайл для текущего пользователя
 	static function getProfile($USER_ID) {

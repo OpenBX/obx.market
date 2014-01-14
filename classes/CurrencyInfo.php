@@ -10,13 +10,9 @@
 
 namespace OBX\Market;
 
-use OBX\Core\Tools;
-use OBX\Core\CMessagePoolStatic;
-use OBX\Core\CMessagePoolDecorator;
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\MessagePoolDecorator;
 
-class CurrencyInfo extends CMessagePoolDecorator
+class CurrencyInfo extends MessagePoolDecorator
 {
 	/**
 	 * @var array
