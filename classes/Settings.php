@@ -1193,6 +1193,9 @@ class Settings_Catalog extends Settings {
 			}
 
 		}
+		if($this->countErrors() <1) {
+			$this->addNotice(GetMessage('OBX:MARKET:SETTINGS:CATALOG:INFO_UPDATED'));
+		}
 		return true;
 	}
 }

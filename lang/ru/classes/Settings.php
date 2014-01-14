@@ -54,6 +54,7 @@ $MESS['OBX_SETT_CATALOG_B_SAVE'] = 'Сохранить изм. инфблоко�
 $MESS['OBX_SETT_CATALOG_B_CANCEL'] = 'Отменить изм. инфблоков';
 $MESS['OBX_SETT_CATALOG_S_DISCOUNT_PROP'] = 'Свойство скидки на товар';
 $MESS['OBX_SETT_CATALOG_S_WEIGHT_PROP'] = 'Свойство веса товара';
+$MESS['OBX:MARKET:SETTINGS:CATALOG:INFO_UPDATED'] = 'Информация о каталогах обновлена';
 
 $MESS['OBX_SETT_WEIGHT'] = 'Вес';
 $MESS['OBX_SETT_DISCOUNT'] = 'Скидка[%]';
