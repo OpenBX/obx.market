@@ -19,14 +19,11 @@ IncludeModuleLangFile(__FILE__);
  *
  */
 class OrderStatusDBS extends DBSimple {
-	// TODO: Проверка на права
-	const ALLOW_CHANGE_ITEMS 		=	1;
-	const ALLOW_CHANGE_STATUS		=	2;
-	const ALLOW_CHANGE_DELIVERY_ID	=	4;
-	const ALLOW_CHANGE_PAY_ID		=	8;
-	const ALLOW_CHANGE_VAT			=	16;
-	const ALLOW_CHANGE_DISCOUNT		=	32;
-
+	protected $_entityModuleID = 'obx.market';
+	protected $_entityEventsID = 'OrderStatusRow';
+	protected $_mainTable = 'S';
+	protected $_mainTablePrimaryKey = 'ID';
+	protected $_mainTableAutoIncrement = 'ID';
 	protected $_arTableList = array(
 		'S' => 'obx_order_status'
 	);
@@ -43,9 +40,6 @@ class OrderStatusDBS extends DBSimple {
 		'PERMISSION'			=> array('S'	=> 'PERMISSION'),
 		'IS_SYS'				=> array('S'	=> 'IS_SYS')
 	);
-	protected $_mainTable = 'S';
-	protected $_mainTablePrimaryKey = 'ID';
-	protected $_mainTableAutoIncrement = 'ID';
 	protected $_arTableUnique = array(
 		"udx_obx_order_status" => array("CODE")
 	);
@@ -63,6 +57,15 @@ class OrderStatusDBS extends DBSimple {
 		'ACTIVE' => 'Y',
 		'IS_SYS' => 'N',
 	);
+
+	// TODO: Проверка на права
+	const ALLOW_CHANGE_ITEMS 		=	1;
+	const ALLOW_CHANGE_STATUS		=	2;
+	const ALLOW_CHANGE_DELIVERY_ID	=	4;
+	const ALLOW_CHANGE_PAY_ID		=	8;
+	const ALLOW_CHANGE_VAT			=	16;
+	const ALLOW_CHANGE_DISCOUNT		=	32;
+
 	function __construct() {
 		$this->_arTableFieldsCheck = array(
 			'ID' => self::FLD_T_INT | self::FLD_NOT_NULL,

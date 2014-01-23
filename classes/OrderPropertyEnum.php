@@ -20,8 +20,9 @@ IncludeModuleLangFile(__FILE__);
  */
 class OrderPropertyEnumDBS extends DBSimple
 {
+
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'OrderPropertyEnum';
+	protected $_entityEventsID = 'OrderPropertyEnumRow';
 	protected $_arTableList = array(
 		'OPE' => 'obx_order_property_enum',
 		'OP' => 'obx_order_property'

@@ -19,7 +19,11 @@ IncludeModuleLangFile(__FILE__);
 class BasketItemDBS extends DBSimple
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'BasketItem';
+	protected $_entityEventsID = 'BasketItemRow';
+
+	protected $_mainTable = 'I';
+	protected $_mainTablePrimaryKey = 'ID';
+	protected $_mainTableAutoIncrement = 'ID';
 
 	protected $_arTableList = array(
 		'I'		=> 'obx_basket_items',
@@ -118,9 +122,6 @@ SQL
 		'DISCOUNT_VALUE',
 		'TOTAL_PRICE_VALUE'
 	);
-	protected $_mainTable = 'I';
-	protected $_mainTablePrimaryKey = 'ID';
-	protected $_mainTableAutoIncrement = 'ID';
 	protected $_arTableUnique = array(
 		'udx_obx_basket_items' => array('BASKET_ID', 'PRODUCT_ID', 'PRICE_ID')
 	);

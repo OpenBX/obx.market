@@ -22,13 +22,13 @@ IncludeModuleLangFile(__FILE__);
 class CurrencyFormatDBS extends DBSimple
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'CurrencyFormat';
+	protected $_entityEventsID = 'CurrencyFormatRow';
+	protected $_mainTable = 'F';
 	protected $_arTableList = array(
 		'C' => 'obx_currency',
 		'L' => 'b_language',
 		'F' => 'obx_currency_format'
 	);
-	protected $_mainTable = 'F';
 	protected $_arTableLinks = array(
 		0 => array(
 			array('F' => 'CURRENCY'),

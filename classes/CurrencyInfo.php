@@ -25,7 +25,9 @@ class CurrencyInfo extends MessagePoolDecorator
 	 * @return null | self
 	 */
 	static public function & getInstance($currency, $bUpdateInstance = false) {
-		$isCorrectCurrency = CurrencyDBS::getInstance()->__check_CURRENCY($currency);
+		/** @var CurrencyDBS $CurrencyDBS */
+		$CurrencyDBS = CurrencyDBS::getInstance();
+		$isCorrectCurrency = $CurrencyDBS->__check_CURRENCY($currency);
 		if(!$isCorrectCurrency) {
 			return null;
 		}
@@ -33,7 +35,9 @@ class CurrencyInfo extends MessagePoolDecorator
 			self::$_arInstances[$currency] = new self($currency);
 		}
 		elseif($bUpdateInstance) {
-			self::$_arInstances[$currency]->updateInfo();
+			/** @var self $CurrencyInfo */
+			$CurrencyInfo = &self::$_arInstances[$currency];
+			$CurrencyInfo->updateInfo();
 		}
 		return self::$_arInstances[$currency];
 	}

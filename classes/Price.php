@@ -23,12 +23,16 @@ class PriceDBS extends DBSimple {
 
 	const DEFAULT_PRICE_GROUP = "2";
 
+	protected $_entityModuleID = 'obx.market';
+	protected $_entityEventsID = 'PriceRow';
+
+	protected $_mainTable = 'P';
 	protected $_arTableList = array(
 		'P' => 'obx_price',
 		'C' => 'obx_currency',
 		'F' => 'obx_currency_format'
 	);
-	protected $_mainTable = 'P';
+
 	protected $_arTableLinks = array(
 		0 => array(
 			array("P" => "CURRENCY"),

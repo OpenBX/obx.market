@@ -18,7 +18,7 @@ IncludeModuleLangFile(__FILE__);
 class ECommerceIBlockDBS extends DBSimple
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'ECommerceIBlock';
+	protected $_entityEventsID = 'ECommerceIBlockLink';
 	protected $_arTableList = array(
 		'E' => 'obx_ecom_iblock',
 		'B' => 'b_iblock',

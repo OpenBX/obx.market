@@ -19,7 +19,7 @@ IncludeModuleLangFile(__FILE__);
 class BasketDBS extends DBSimple
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'Basket';
+	protected $_entityEventsID = 'BasketRow';
 	protected $_mainTable = 'B';
 	protected $_arTableList = array(
 		'B'		=> 'obx_basket',

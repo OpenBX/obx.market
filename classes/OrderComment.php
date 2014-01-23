@@ -17,8 +17,11 @@ IncludeModuleLangFile(__FILE__);
 
 class OrderCommentDBS extends DBSimple
 {
+	protected $_entityModuleID = 'obx.market';
+	protected $_entityEventsID = 'OrderCommentRow';
+
 	protected $_arTableList = array(
-		"OC" => "obx_order_comments"
+		'OC' => 'obx_order_comments'
 	);
 	protected $_arTableFields = array(
 		'ID'							=> array('OC'	=> 'ID'),

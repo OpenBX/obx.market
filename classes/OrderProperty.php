@@ -17,7 +17,7 @@ IncludeModuleLangFile(__FILE__);
 class OrderPropertyDBS extends DBSimple
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'OrderProperty';
+	protected $_entityEventsID = 'OrderPropertyRow';
 	protected $_arTableList = array(
 		'OP' => 'obx_order_property'
 	);

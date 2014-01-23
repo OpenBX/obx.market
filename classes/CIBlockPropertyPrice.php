@@ -19,7 +19,7 @@ IncludeModuleLangFile(__FILE__);
 class CIBlockPropertyPriceDBS extends DBSimple
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'IBlockPropertyPrice';
+	protected $_entityEventsID = 'IBlockPropertyPriceLink';
 	protected $_arTableDefaultFields = array();
 	protected $_arTableList = array(
 		'P'		=> 'obx_price',
@@ -383,10 +383,12 @@ SQL;
 	}
 
 	protected function _onAfterDelete(&$arExists) {
+		$bSuccess = true;
 		if( $this->_bDeleteIBlockPropOnDeletePrice ) {
-				return \CIBlockProperty::Delete($arExists['IBLOCK_PROP_ID']);
+			$bSuccess = \CIBlockProperty::Delete($arExists['IBLOCK_PROP_ID']);
 		}
-		return true;
+		$bSuccess = $bSuccess && parent::_onAfterDelete($arExists);
+		return $bSuccess;
 	}
 
 	static public function onIBlockPropertyDelete($ID) {
