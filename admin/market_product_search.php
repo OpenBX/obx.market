@@ -635,7 +635,9 @@ function onChangeFilterIblock(domIBselect) {
 			$arFullPropList[$arProp['IBLOCK_ID']][$arProp['PRICE_ID']] = $arProp;
 		} unset($arProp);
 
-		echo json_encode($arFullPropList);
+		echo CUtil::PhpToJSObject($arFullPropList);
+		// Как обычно в CP1251 json_encode работет ч/з ... плохой алгоритм в общем.
+		//echo json_encode($arFullPropList);
 	?>;
 	var selectedIblockID = domIBselect.options[domIBselect.options.selectedIndex].value;
 	var domPriceSelect = BX('filter_price_id');
