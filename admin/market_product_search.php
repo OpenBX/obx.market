@@ -52,7 +52,9 @@ if($IBLOCK_ID > 0)
 	}
 	else
 	{
-		$bBadBlock = true;
+		//$bBadBlock = true;
+		$IBLOCK_ID = 0;
+		$filter_iblock_id = 0;
 	}
 
 	if($bBadBlock)
