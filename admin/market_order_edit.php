@@ -507,18 +507,25 @@ $TabControl->BeginNextTab();
 			<tr class="heading">
 				<td colspan="2"><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY")?></td>
 			</tr>
-
+			<tr>
+				<td><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY_QUANTITY")?></td>
+				<td><?=$arSummary['ITEMS_COUNT']?></td>
+			</tr>
 			<tr>
 				<td><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY_COST")?></td>
+				<td><?=$arSummary['COST_FORMATTED']?></td>
+			</tr>
+			<tr>
+				<td><?=GetMessage('OBX_ORDER_ITEMS_SUMMARY_DISCOUNT')?></td>
+				<td><?=$arSummary['DISCOUNT_FORMATTED']?></td>
+			</tr>
+			<tr>
+				<td><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY_TOTAL_COST")?></td>
 				<td><?=$arSummary['TOTAL_COST_FORMATTED']?></td>
 			</tr>
 			<tr>
 				<td><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY_WEIGHT")?></td>
 				<td><?=$arSummary['WEIGHT']?></td>
-			</tr>
-			<tr>
-				<td><?=GetMessage("OBX_ORDER_ITEMS_SUMMARY_QUANTITY")?></td>
-				<td><?=$arSummary['ITEMS_COUNT']?></td>
 			</tr>
 		</table>
 	</td>

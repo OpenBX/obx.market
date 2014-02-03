@@ -429,11 +429,12 @@ class Order extends MessagePoolDecorator {
 		$this->_weightValue = 0;
 		foreach($arItemsList as &$arItem) {
 			$this->_productCount++;
-			$this->_itemsCount += floatval($arItem['QUANTITY']);
-			$this->_costValue += floatval($arItem['PRICE_VALUE']);
-			$this->_costTotalValue += floatval($arItem['TOTAL_PRICE_VALUE']);
-			$this->_discountValue += floatval($arItem['DISCOUNT_VALUE']);
-			$this->_weightValue += floatval($arItem['WEIGHT']);
+			$prodItemsCount = floatval($arItem['QUANTITY']);
+			$this->_itemsCount += floatval($prodItemsCount);
+			$this->_costValue += floatval($arItem['PRICE_VALUE'])*$prodItemsCount;
+			$this->_costTotalValue += floatval($arItem['TOTAL_PRICE_VALUE'])*$prodItemsCount;
+			$this->_discountValue += floatval($arItem['DISCOUNT_VALUE'])*$prodItemsCount;
+			$this->_weightValue += floatval($arItem['WEIGHT'])*$prodItemsCount;
 		}
 		return $arItemsList;
 	}
