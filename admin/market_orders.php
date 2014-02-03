@@ -357,8 +357,8 @@ while( $arRes = $rsData->NavNext(true, 'f_') ) {
 	$row->AddSelectField('STATUS_ID', $arOrderStatusList4Select);
 	$row->AddViewField('CURRENCY', $arCurrencyList[$f_CURRENCY]['LANG'][LANGUAGE_ID]['NAME']);
 	//$row->AddViewField("COST", ($f_DELIVERY_COST + $f_ITEMS_COST + $f_PAY_TAX_VALUE - $f_DISCOUNT_VALUE));
-	$row->AddViewField("COST", $f_ITEMS_COST);
-	$row->AddViewField("TOTAL_COST", $f_ITEMS_TOTAL_COST);
+	$row->AddViewField("COST", $CurrencyFormatDBS->formatPrice($f_ITEMS_COST, $arRes['CURRENCY'], LANGUAGE_ID) );
+	$row->AddViewField("TOTAL_COST", $CurrencyFormatDBS->formatPrice($f_ITEMS_TOTAL_COST, $arRes['CURRENCY'], LANGUAGE_ID) );
 
 
 	$itemsView = '';
