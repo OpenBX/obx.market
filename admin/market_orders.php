@@ -25,7 +25,11 @@ use OBX\Market\OrderPropertyEnumDBS;
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 if(!CModule::IncludeModule('obx.market')) return;
-
+/**
+ * @global \CMain $APPLICATION
+ * @global \CDatabase $DB
+ * @global \CUser $USER
+ */
 $APPLICATION->AddHeadString('<meta http-equiv="X-UA-Compatible" content="IE=edge">');
 // Доступ
 //if (!$USER->CanDoOperation('edit_orders'))
@@ -363,7 +367,8 @@ while( $arRes = $rsData->NavNext(true, 'f_') ) {
 
 	$itemsView = '';
 	if(floatval($f_ITEMS_COST) > 0) {
-		$arItemsFromJSON = json_decode(htmlspecialcharsback($f_ITEMS_JSON), true);
+		$jsonItems = htmlspecialcharsback($f_ITEMS_JSON);
+		$arItemsFromJSON = CUtil::JsObjectToPhp($jsonItems);
 		if(!empty($arItemsFromJSON)) {
 			$iItem = 0;
 			foreach($arItemsFromJSON['items'] as &$arItemFromJSON) {
@@ -379,8 +384,8 @@ while( $arRes = $rsData->NavNext(true, 'f_') ) {
 		$debug=1;
 	}
 	$row->AddViewField("ITEMS_JSON", $itemsView);
-
-	$arPropertyValues = json_decode(htmlspecialcharsback($f_PROPERTIES_JSON), true);
+	$jsonProperties = htmlspecialcharsback($f_PROPERTIES_JSON);
+	$arPropertyValues = CUtil::JsObjectToPhp($jsonProperties);
 	$propertyView = '';
 	foreach($arPropertyValues as &$arPropValue) {
 		if($arPropValue['T'] == 'C') {

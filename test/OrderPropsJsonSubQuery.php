@@ -87,7 +87,8 @@ SQL
 		$arResult = $rs->Fetch();
 		$this->assertTrue(is_array($arResult));
 		$this->assertArrayHasKey('PROPERTIES_JSON', $arResult);
-		$arJSON = json_decode($arResult['PROPERTIES_JSON'], true);
+		//$arJSON = json_decode($arResult['PROPERTIES_JSON'], true);
+		$arJSON = CUtil::JsObjectToPhp($arResult['PROPERTIES_JSON']);
 		if($arJSON == false) {
 			$strError = $this->getJsonErrorText();
 			$this->assertTrue(is_array($arJSON), 'Error: '.$strError);
@@ -120,7 +121,8 @@ SQL
 		$arResult = $arResult[0];
 		$this->assertTrue(is_array($arResult));
 		$this->assertArrayHasKey('PROPERTIES_JSON', $arResult);
-		$arJSON = json_decode($arResult['PROPERTIES_JSON'], true);
+		//$arJSON = json_decode($arResult['PROPERTIES_JSON'], true);
+		$arJSON = CUtil::JsObjectToPhp($arResult['PROPERTIES_JSON']);
 		if($arJSON == false) {
 			$strError = $this->getJsonErrorText();
 			$this->assertTrue(is_array($arJSON), 'Error: '.$strError);
@@ -153,7 +155,8 @@ SQL
 		$arResult = $arResult[0];
 		$this->assertTrue(is_array($arResult));
 		$this->assertArrayHasKey('PROPERTIES_JSON', $arResult);
-		$arJSON = json_decode($arResult['PROPERTIES_JSON'], true);
+		//$arJSON = json_decode($arResult['PROPERTIES_JSON'], true);
+		$arJSON = CUtil::JsObjectToPhp($arResult['PROPERTIES_JSON']);
 		if($arJSON == false) {
 			$strError = $this->getJsonErrorText();
 			$this->assertTrue(is_array($arJSON), 'Error: '.$strError);

@@ -461,7 +461,7 @@ if($m)
 $lAdmin->AddAdminContextMenu(array(), false);
 
 $onLoadScript = 'checkAddedProducts()'.";\n";
-$onLoadScript .= 'arPageItems = '.json_encode($arProductJSON).";\n";
+$onLoadScript .= 'arPageItems = '.CUtil::PhpToJSObject($arProductJSON).";\n";
 
 $lAdmin->onLoadScript .= $onLoadScript;
 $lAdmin->CheckListMode();
@@ -638,8 +638,6 @@ function onChangeFilterIblock(domIBselect) {
 		} unset($arProp);
 
 		echo CUtil::PhpToJSObject($arFullPropList);
-		// Как обычно в CP1251 json_encode работет ч/з ... плохой алгоритм в общем.
-		//echo json_encode($arFullPropList);
 	?>;
 	var selectedIblockID = domIBselect.options[domIBselect.options.selectedIndex].value;
 	var domPriceSelect = BX('filter_price_id');

@@ -589,7 +589,7 @@ $TabControl->BeginNextTab();
 	if( typeof(obx) == 'undefined' ) { obx = {}; }
 	if( typeof(obx.admin) == 'undefined' ) { obx.admin = {}; }
 	if( typeof(obx.admin.order_items) == 'undefined' ) { obx.admin.order_items = {}; }
-	obx.admin.order_items.list = <?=json_encode($arItemsInOrderJSON, JSON_FORCE_OBJECT)?>;
+	obx.admin.order_items.list = <?=CUtil::PhpToJSObject($arItemsInOrderJSON)?>;
 	(function ($) {
 		if (typeof($) == 'undefined') return false;
 		var rowtempl = $("#products-row-template").html();
