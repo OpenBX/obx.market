@@ -23,8 +23,10 @@ $MESS["OBX_ORDERLIST_CURRENCY_NAME"] = "Валюта";
 $MESS["OBX_ORDERLIST_CURRENCY_DESCR"] = "Валюта заказа";
 $MESS["OBX_ORDERLIST_ITEMS_NAME"] = "Состав";
 $MESS["OBX_ORDERLIST_ITEMS_DESCR"] = "Состав заказа";
-$MESS["OBX_ORDERLIST_ITEMS_COST_NAME"] = "Стоимость";
-$MESS["OBX_ORDERLIST_ITEMS_COST_DESCR"] = "Стоимость заказа";
+$MESS["OBX_ORDERLIST_ITEMS_COST_NAME"] = "Сумма цен";
+$MESS["OBX_ORDERLIST_ITEMS_COST_DESCR"] = "Стоимость заказа без учета скидок";
+$MESS["OBX_ORDERLIST_ITEMS_TOTAL_COST_NAME"] = "Стоимость";
+$MESS["OBX_ORDERLIST_ITEMS_TOTAL_COST_DESCR"] = "Стоимость заказа с учетом скидок";
 
 
 ?>

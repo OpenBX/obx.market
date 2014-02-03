@@ -272,6 +272,7 @@ $arFilterFields = array(
 );
 
 
+$arOrdersFieldsDescription = $OrderDBS->getFieldsDescription();
 
 // Заголовки
 $aHeaders = array(
@@ -281,7 +282,8 @@ $aHeaders = array(
 	array('id'=>'DATE_CREATED', 'content'=>GetMessage('OBX_MARKET_ORDERS_F_CREATED'), 'sort'=>'DATE_CREATED', 'default'=>true),
 	array('id'=>'TIMESTAMP_X', 'content'=>GetMessage('OBX_MARKET_ORDERS_F_TIMESTAMP_X'), 'sort'=>'TIMESTAMP_X', 'default'=>true),
 	array('id'=>'CURRENCY', 'content'=>GetMessage('OBX_MARKET_ORDERS_F_CURRENCY'), 'sort'=>'CURRENCY', 'default'=>true),
-	array('id'=>'COST', 'content'=>GetMessage('OBX_MARKET_ORDERS_F_COST'), 'sort'=>'ITEMS_COST', 'default'=>true),
+	array('id'=>'COST', 'content'=>$arOrdersFieldsDescription['ITEMS_COST']['NAME'], 'sort'=>'ITEMS_COST', 'default'=>false),
+	array('id'=>'TOTAL_COST', 'content'=>$arOrdersFieldsDescription['ITEMS_TOTAL_COST']['NAME'], 'sort'=>'ITEMS_COST', 'default'=>true),
 	array('id'=>'ITEMS_JSON', 'content'=>GetMessage('OBX_MARKET_ORDERS_F_ITEMS'), 'default'=>true),
 	array('id'=>'PROPERTIES_JSON', 'content'=> GetMessage('OBX_MARKET_ORDERS_F_PROPERTIES_JSON'), 'default'=>false),
 );
@@ -321,9 +323,25 @@ $arOrdersPagination = array("nPageSize"=>CAdminResult::GetNavSize($tableID));
 /**
  * Выборка
  */
-$rsData = $OrderDBS->getList(array($by=>$order), $arOrderListFilter, null, $arOrdersPagination, array(
-	'ID', 'USER_ID', 'USER_NAME', 'STATUS_ID', 'DATE_CREATED', 'TIMESTAMP_X', 'CURRENCY', 'ITEMS_COST', 'ITEMS_JSON', 'PROPERTIES_JSON'
-));
+$rsData = $OrderDBS->getList(
+	array($by=>$order),
+	$arOrderListFilter,
+	null,
+	$arOrdersPagination,
+	array(
+		'ID',
+		'USER_ID',
+		'USER_NAME',
+		'STATUS_ID',
+		'DATE_CREATED',
+		'TIMESTAMP_X',
+		'CURRENCY',
+		'ITEMS_COST',
+		'ITEMS_TOTAL_COST',
+		'ITEMS_JSON',
+		'PROPERTIES_JSON'
+	)
+);
 $rsData = new CAdminResult($rsData, $tableID);
 $rsData->NavStart();
 $lAdmin->NavText($rsData->GetNavPrint(GetMessage('OBX_MARKET_ORDERS_LIST_NAV')));
@@ -338,7 +356,9 @@ while( $arRes = $rsData->NavNext(true, 'f_') ) {
 	$row->AddViewField('STATUS_ID', '['.$f_STATUS_ID.']&nbsp;'.$arOrderStatusList[$f_STATUS_ID]['NAME']);
 	$row->AddSelectField('STATUS_ID', $arOrderStatusList4Select);
 	$row->AddViewField('CURRENCY', $arCurrencyList[$f_CURRENCY]['LANG'][LANGUAGE_ID]['NAME']);
-	$row->AddViewField("COST", ($f_DELIVERY_COST + $f_ITEMS_COST + $f_PAY_TAX_VALUE - $f_DISCOUNT_VALUE));
+	//$row->AddViewField("COST", ($f_DELIVERY_COST + $f_ITEMS_COST + $f_PAY_TAX_VALUE - $f_DISCOUNT_VALUE));
+	$row->AddViewField("COST", $f_ITEMS_COST);
+	$row->AddViewField("TOTAL_COST", $f_ITEMS_TOTAL_COST);
 
 
 	$itemsView = '';

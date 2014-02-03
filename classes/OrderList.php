@@ -96,6 +96,15 @@ SQL
 					WHERE WBI.BASKET_ID = B.ID
 				)'
 		),
+		'ITEMS_TOTAL_COST' => array(
+			'BI'=> 'SUM(BI.TOTAL_PRICE_VALUE * BI.QUANTITY)',
+			'REQUIRED_TABLES' => 'B',
+			'GET_LIST_FILTER' => '(
+					SELECT SUM(WBI.TOTAL_PRICE_VALUE * WBI.QUANTITY)
+					FROM obx_basket_items as WBI
+					WHERE WBI.BASKET_ID = B.ID
+				)'
+		),
 		'PROPERTIES_JSON' => array('O' => <<<SQL
 			(SELECT
 				concat(
@@ -255,6 +264,10 @@ SQL
 			'ITEMS_COST' => array(
 				"NAME" => GetMessage("OBX_ORDERLIST_ITEMS_COST_NAME"),
 				"DESCR" => GetMessage("OBX_ORDERLIST_ITEMS_COST_DESCR"),
+			),
+			'ITEMS_TOTAL_COST' => array(
+				"NAME" => GetMessage("OBX_ORDERLIST_ITEMS_TOTAL_COST_NAME"),
+				"DESCR" => GetMessage("OBX_ORDERLIST_ITEMS_TOTAL_COST_DESCR"),
 			),
 		);
 		$this->_getEntityEvents();
