@@ -131,6 +131,7 @@ class Basket extends MessagePoolDecorator
 	}
 	static public function getByHash($hash) {
 		if( ! self::$_bDBSimpleObjectInitialized ) self::_initDBSimpleObjects();
+		$defaultCurrency = Currency::getDefault();
 		$hash = substr($hash, 0, 32);
 		$rsBasket = self::$_BasketDBS->getList(null, array(
 			'HASH_STRING' => $hash,
@@ -139,14 +140,32 @@ class Basket extends MessagePoolDecorator
 		if( $rsBasket->SelectedRowsCount() < 1 ) {
 			$newBasketID = self::$_BasketDBS->add(array(
 				'HASH_STRING' => $hash,
-				'CURRENCY' => Currency::getDefault()
+				'CURRENCY' => $defaultCurrency
 			));
 			$rsBasket = self::$_BasketDBS->getByID($newBasketID, null, true);
+		}
+		else {
+			$arBasket = $rsBasket->Fetch();
+			$basketID = $arBasket['ID'];
+			if($arBasket['CURRENCY'] != $defaultCurrency) {
+				$rsBasketItems = self::$_BasketItemDBS->getList(null, array(
+					'BASKET_ID' => $basketID
+				));
+				if($rsBasketItems->SelectedRowsCount() > 0) {
+					self::$_BasketItemDBS->deleteByFilter(array('BASKET_ID' => $basketID));
+				}
+				self::$_BasketDBS->update(array(
+					'ID' => $basketID,
+					'CURRENCY' => $defaultCurrency
+				));
+			}
+			$rsBasket = self::$_BasketDBS->getByID($basketID, null, true);
 		}
 		return new self($rsBasket);
 	}
 	static public function getByUserID($userID) {
 		if( ! self::$_bDBSimpleObjectInitialized ) self::_initDBSimpleObjects();
+		$defaultCurrency = Currency::getDefault();
 		$rsBasket = self::$_BasketDBS->getList(null, array(
 			'USER_ID' => $userID,
 			'ORDER_ID' => null
@@ -154,9 +173,26 @@ class Basket extends MessagePoolDecorator
 		if( $rsBasket->SelectedRowsCount() < 1 ) {
 			$newBasketID = self::$_BasketDBS->add(array(
 				'USER_ID' => $userID,
-				'CURRENCY' => Currency::getDefault()
+				'CURRENCY' => $defaultCurrency
 			));
 			$rsBasket = self::$_BasketDBS->getByID($newBasketID, null, true);
+		}
+		else {
+			$arBasket = $rsBasket->Fetch();
+			$basketID = $arBasket['ID'];
+			if($arBasket['CURRENCY'] != $defaultCurrency) {
+				$rsBasketItems = self::$_BasketItemDBS->getList(null, array(
+					'BASKET_ID' => $basketID
+				));
+				if($rsBasketItems->SelectedRowsCount() > 0) {
+					self::$_BasketItemDBS->deleteByFilter(array('BASKET_ID' => $basketID));
+				}
+				self::$_BasketDBS->update(array(
+					'ID' => $basketID,
+					'CURRENCY' => $defaultCurrency
+				));
+			}
+			$rsBasket = self::$_BasketDBS->getByID($basketID, null, true);
 		}
 		return new self($rsBasket);
 	}
@@ -166,6 +202,7 @@ class Basket extends MessagePoolDecorator
 		if( $rsBasket->SelectedRowsCount() < 1 ) {
 			$newBasketID = self::$_BasketDBS->add(array(
 				'ORDER_ID'	=> $orderID,
+				// TODO: Сомнительно. тут надо добавить валюту заказа, а не на дефолтную валюту
 				'CURRENCY' => Currency::getDefault()
 			));
 			$rsBasket = self::$_BasketDBS->getByID($newBasketID, null, true);

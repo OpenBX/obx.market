@@ -61,6 +61,15 @@ SQLCHUNK
 					WHERE WBI.BASKET_ID = B.ID
 				)'
 		),
+		'ITEMS_TOTAL_COST' => array(
+			'BI'=> 'SUM(BI.TOTAL_PRICE_VALUE * BI.QUANTITY)',
+			'REQUIRED_TABLES' => 'B',
+			'GET_LIST_FILTER' => '(
+					SELECT SUM(WBI.TOTAL_PRICE_VALUE * WBI.QUANTITY)
+					FROM obx_basket_items as WBI
+					WHERE WBI.BASKET_ID = B.ID
+				)'
+		),
 		'PRODUCT_COUNT' => array(
 			'BI' => 'SUM(1)',
 			'REQUIRED_TABLES' => 'B',
@@ -213,12 +222,5 @@ SQLCHUNK
 	}
 }
 class BasketList extends DBSimpleStatic {
-	static public function registerModuleDependencies() {
-		return self::getInstance()->registerModuleDependencies();
-	}
-
-	static public function unRegisterModuleDependencies() {
-		return self::getInstance()->unRegisterModuleDependencies();
-	}
 }
 BasketList::__initDBSimple(BasketDBS::getInstance());
