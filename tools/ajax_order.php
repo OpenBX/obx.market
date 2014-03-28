@@ -51,6 +51,12 @@ else {
 			return false;
 		}
 		$CurrentBasket = Basket::getCurrent();
+		if ($CurrentBasket->isEmpty()) {
+			$arJSON['success'] = 'N';
+			$arJSON['messages'][] = GetMessage('OBX_MARKET_AJAX_ORDER_ERROR_2');
+			echo json_encode($arJSON);
+			return false;
+		}
 
 		$arAddOrderErrors = array();
 		$NewOrder = Order::add(array("USER_ID" => $CurrentBasket->getFields("USER_ID")), $arAddOrderErrors);

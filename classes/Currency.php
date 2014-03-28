@@ -87,7 +87,7 @@ class CurrencyDBS extends DBSimple {
 		return true;
 	}
 
-	protected function _onBeforeAdd(&$arFields) {
+	protected function _onBeforeAdd(&$arFields, &$arCheckResult) {
 		// +++ automatic setDefault() in add()
 		if($arFields['IS_DEFAULT'] == 'Y') {
 			$arFields['IS_DEFAULT'] = 'N';
