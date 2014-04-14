@@ -105,6 +105,8 @@ Tools::addDeferredJS("/bitrix/js/obx.market/obx.basket.js");
 
 $arResult['BASKET_COST'] = $Basket->getCost();
 $arResult['BASKET_COST_FORMATTED'] = $Basket->getCost(true);
+$arResult['BASKET_DISCOUNT'] = $Basket->getDiscountValue();
+$arResult['BASKET_DISCOUNT_FORMATTED'] = $Basket->getDiscountValue(true);
 $arResult['PRODUCTS_COUNT'] = $Basket->getProductsCount();
 $arResult['PRODUCTS_LIST'] = $Basket->getProductsList();
 

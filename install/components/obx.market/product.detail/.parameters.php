@@ -67,6 +67,24 @@ $arComponentParameters = array(
 			'ADDITIONAL_VALUES' => 'Y',
 			'VALUES' => $arIblockId,
 		),
+		'ELEMENT_ID' => array(
+			'PARENT' => 'BASE',
+			'NAME' => GetMessage('OBXMT_ELEMENT_ID'),
+			'TYPE' => 'STRING',
+			'DEFAULT' => '={$_REQUEST["ELEMENT_ID"]}',
+		),
+		'ELEMENT_CODE' => array(
+			'PARENT' => 'BASE',
+			'NAME' => GetMessage('OBXMT_ELEMENT_CODE'),
+			'TYPE' => 'STRING',
+			'DEFAULT' => '={$_REQUEST["ELEMENT_CODE"]}',
+		),
+		'SET_STATUS_404' => array(
+			'PARENT' => 'ADDITIONAL_SETTINGS',
+			'NAME' => GetMessage('OBXMT_CP_PRD_SET_STATUS_404'),
+			'TYPE' => 'CHECKBOX',
+			'DEFAULT' => 'N',
+		),
 		'ACTION_VARIABLE' => array(
 			'PARENT' => 'BASE',
 			'NAME' => GetMessage('OBXMT_ACTION_VARIABLE'),

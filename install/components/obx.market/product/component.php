@@ -21,7 +21,7 @@ $arDefaultUrlTemplates404 = array(
 	"sections" => "",
 	"section" => "#SECTION_ID#/",
 	"element" => "#SECTION_ID#/#ELEMENT_ID#/",
-	"compare" => "compare.php?action=COMPARE",
+	"action" => "action/#ACTION_CODE#",
 );
 
 $arDefaultVariableAliases404 = array();
@@ -33,7 +33,7 @@ $arComponentVariables = array(
 	"SECTION_CODE",
 	"ELEMENT_ID",
 	"ELEMENT_CODE",
-	"action",
+	"ACTION_CODE",
 );
 
 if($arParams["SEF_MODE"] == "Y")
@@ -92,35 +92,31 @@ else
 
 	$componentPage = "";
 
-	$arCompareCommands = array(
-		"COMPARE",
-		"DELETE_FEATURE",
-		"ADD_FEATURE",
-		"DELETE_FROM_COMPARE_RESULT",
-		"ADD_TO_COMPARE_RESULT",
-		"COMPARE_BUY",
-		"COMPARE_ADD2BASKET",
-	);
-
-	if(isset($arVariables["action"]) && in_array($arVariables["action"], $arCompareCommands))
-		$componentPage = "compare";
-	elseif(isset($arVariables["ELEMENT_ID"]) && intval($arVariables["ELEMENT_ID"]) > 0)
+	if(isset($arVariables["ACTION_CODE"]) && strlen($arVariables["ACTION_CODE"]) > 0) {
+		$componentPage = "action";
+	}
+	elseif(isset($arVariables["ELEMENT_ID"]) && intval($arVariables["ELEMENT_ID"]) > 0) {
 		$componentPage = "element";
-	elseif(isset($arVariables["ELEMENT_CODE"]) && strlen($arVariables["ELEMENT_CODE"]) > 0)
+	}
+	elseif(isset($arVariables["ELEMENT_CODE"]) && strlen($arVariables["ELEMENT_CODE"]) > 0) {
 		$componentPage = "element";
-	elseif(isset($arVariables["SECTION_ID"]) && intval($arVariables["SECTION_ID"]) > 0)
+	}
+	elseif(isset($arVariables["SECTION_ID"]) && intval($arVariables["SECTION_ID"]) > 0) {
 		$componentPage = "section";
-	elseif(isset($arVariables["SECTION_CODE"]) && strlen($arVariables["SECTION_CODE"]) > 0)
+	}
+	elseif(isset($arVariables["SECTION_CODE"]) && strlen($arVariables["SECTION_CODE"]) > 0) {
 		$componentPage = "section";
-	else
+	}
+	else {
 		$componentPage = "sections";
+	}
 
 	$arResult = array(
 		"FOLDER" => "",
 		"URL_TEMPLATES" => Array(
 			"section" => htmlspecialchars($APPLICATION->GetCurPage())."?".$arVariableAliases["SECTION_ID"]."=#SECTION_ID#",
 			"element" => htmlspecialchars($APPLICATION->GetCurPage())."?".$arVariableAliases["SECTION_ID"]."=#SECTION_ID#"."&".$arVariableAliases["ELEMENT_ID"]."=#ELEMENT_ID#",
-			"compare" => htmlspecialchars($APPLICATION->GetCurPage())."?".$arVariableAliases["action"]."=COMPARE",
+			"action" => htmlspecialchars($APPLICATION->GetCurPage())."?".$arVariableAliases["ACTION_CODE"]."=#ACTION_CODE#",
 		),
 		"VARIABLES" => $arVariables,
 		"ALIASES" => $arVariableAliases

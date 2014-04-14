@@ -9,11 +9,26 @@
  ** @mailto tashiro@yandex.ru             **
  ** @copyright 2013 DevTop                **
  *******************************************/
-
 use OBX\Market\Price;
 use OBX\Market\Basket;
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
+
+/**
+ * @var CBitrixComponent $this
+ * @var array $arParams
+ * @var array $arResult
+ * @var CBitrixComponent $this
+ * @var string $componentPath
+ * @var string $componentName
+ * @var string $componentTemplate
+ *
+ * @global CDatabase $DB
+ * @global CUser $USER
+ * @global CMain $APPLICATION
+ * @global CCacheManager $CACHE_MANAGER
+ */
+global $DB, $USER, $APPLICATION, $CACHE_MANAGER;
 
 if (!CModule::IncludeModule('obx.market')) {
 	ShowError(GetMessage('OBX_MARKET_NOT_INSTALLED'));
@@ -23,6 +38,10 @@ if (!CModule::IncludeModule('iblock')) {
 	ShowError(GetMessage('OBX_MARKET_NOT_INSTALLED'));
 	return false;
 }
+
+///////////////////////////////////////////////////////////////////////////
+// Processing of received parameters
+///////////////////////////////////////////////////////////////////////////
 
 $arParams['IBLOCK_TYPE'] = trim($arParams['IBLOCK_TYPE']);
 $arParams['IBLOCK_ID'] = intval($arParams['IBLOCK_ID']);
@@ -35,9 +54,6 @@ $arParams['FILTER_NAME'] = trim($arParams['FILTER_NAME']);
 
 $arParams['AJAX_BUY'] = $arParams['AJAX_BUY'] == 'Y' ? 'Y' : 'N';
 
-/*************************************************************************
- *        Processing of the Buy link
- *************************************************************************/
 $strError = '';
 if (array_key_exists($arParams['ACTION_VARIABLE'], $_REQUEST) && array_key_exists($arParams['PRODUCT_ID_VARIABLE'], $_REQUEST)) {
 	$Basket = Basket::getCurrent();
@@ -64,7 +80,19 @@ if (array_key_exists($arParams['ACTION_VARIABLE'], $_REQUEST) && array_key_exist
 	LocalRedirect($APPLICATION->GetCurPageParam('', array($arParams['PRODUCT_ID_VARIABLE'], $arParams['ACTION_VARIABLE'], $arParams['QUANTITY_VARIABLE'])));
 }
 
-if ($this->StartResultCache()) {
+if( $this->StartResultCache(false, ($arParams['CACHE_GROUPS']==='N'? false: $USER->GetGroups())) ) {
+
+	$CIBlock = new CIBlock;
+	/** @var \CIBlockResult $rsIBlock */
+	$url_template = CIBlock::GetArrayByID($arParams['IBLOCK_ID'], 'LIST_PAGE_URL');
+	$arIBlock = CIBlock::GetArrayByID($arParams['IBLOCK_ID']);
+	$arIBlock['IBLOCK_CODE'] = $arIBlock['CODE'];
+	$arIBlock['LIST_PAGE_URL'] = CIBlock::ReplaceDetailURL($url_template, $arIBlock, true, false);
+	if( empty($arIBlock) ) {
+		ShowError(GetMessage('OBX_MARKET_CMP_IB_NOT_FOUND'));
+		$this->abortResultCache();
+	}
+
 	$arItems = array();
 
 	$arElementSelect = array(
@@ -97,14 +125,16 @@ if ($this->StartResultCache()) {
 	);
 
 	$arNavStartParams = array();
-
-	$dbItems = CIBlockElement::GetList(
+	$CIBlockElement = new \CIBlockElement();
+	$dbItems = $CIBlockElement->GetList(
 		$arElementSort,
 		$arElementFilter,
 		false, //mixed arGroupBy
 		false, //mixed arNavStartParams
 		$arElementSelect
 	);
+	/** @var $dbItems \CIBlockResult */
+	$dbItems->SetUrlTemplates($arParams['DETAIL_URL']);
 
 	$arSectionSort = Array('SORT' => 'ASC');
 	$arSectionFilter = Array(
@@ -128,14 +158,23 @@ if ($this->StartResultCache()) {
 		,'SECTION_PAGE_URL'
 		,'ELEMENT_CNT'
 	);
-	$dbSections = CIBlockSection::GetList($arSectionSort, $arSectionFilter, true, $arSectionSelect, false);
-
+	$CIBlockSection = new \CIBlockSection;
+	$dbSections = $CIBlockSection->GetList($arSectionSort, $arSectionFilter, true, $arSectionSelect, false);
+	$dbSections->SetUrlTemplates('', $arParams['SECTION_URL']);
 	$arSections = array();
+	$bNoOneSection = true;
 	while ($arSection = $dbSections->GetNext()) {
+		$bNoOneSection = false;
 		$arSections[$arSection['ID']] = $arSection;
 	}
-	unset ($dbSections);
-	unset ($arSection);
+	if($bNoOneSection) {
+		$arSections[0] = array(
+			'ID' => 0,
+			'IBLOCK_ID' => $arIBlock['ID'],
+			'LIST_PAGE_URL' => $arIBlock['LIST_PAGE_URL']
+		);
+	}
+	unset ($dbSections, $CIBlockSection, $arSection);
 
 	$bPriceFound = true;
 	$i = 0;
@@ -255,7 +294,7 @@ if ($this->StartResultCache()) {
 		}
 
 		$arItems[$i] = $arItem;
-		$arSections[$arItem['IBLOCK_SECTION_ID']]['ITEMS'][] = & $arItems[$i];
+		$arSections[intval($arItem['IBLOCK_SECTION_ID'])]['ITEMS'][] = & $arItems[$i];
 
 		if (!empty ($arSupportData['WEIGHT']['ID'])) {
 			$resWeight = CIBlockProperty::GetByID(
@@ -289,9 +328,11 @@ if ($this->StartResultCache()) {
 	} else {
 		$arResult['ERROR'] = null;
 	}
+	$arResult['IBLOCK'] = $arIBlock;
 	$arResult['ITEMS'] = $arItems;
 	$arResult['SECTIONS'] = $arSections;
 	$arResult['SUPPORT_DATA'] = $arSupportData;
+	unset ($arIBlock);
 	unset ($arItems);
 	unset ($arSections);
 	unset ($arSupportData);

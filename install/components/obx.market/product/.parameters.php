@@ -101,6 +101,7 @@ $arComponentParameters = array(
 		"VARIABLE_ALIASES" => Array(
 			"SECTION_ID" => Array("NAME" => GetMessage("SECTION_ID_DESC")),
 			"ELEMENT_ID" => Array("NAME" => GetMessage("ELEMENT_ID_DESC")),
+			"ACTION_CODE" => Array("NAME" => GetMessage("ACTION_CODE_DESC")),
 		),
 		"SEF_MODE" => Array(
 			"sections" => array(
@@ -118,9 +119,9 @@ $arComponentParameters = array(
 				"DEFAULT" => "#SECTION_ID#/#ELEMENT_ID#/",
 				"VARIABLES" => array("ELEMENT_ID"=>"EID"),
 			),
-			"compare" => array(
-				"NAME" => GetMessage("COMPARE_PAGE"),
-				"DEFAULT" => "compare.php?action=#ACTION_CODE#",
+			"action" => array(
+				"NAME" => GetMessage("ACTION_PAGE"),
+				"DEFAULT" => "action/#ACTION_CODE#",
 				"VARIABLES" => array("action"=>"action"),
 			),
 		),
@@ -303,7 +304,7 @@ $arComponentParameters = array(
 			"TYPE" => "LIST",
 			"MULTIPLE" => "Y",
 			"VALUES" => $arProperty_L
-		)
+		),
 	),
 );
 

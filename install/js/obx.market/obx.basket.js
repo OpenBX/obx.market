@@ -62,24 +62,27 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 
 	// default conf
 	var defaults= {
-		api:					true
-		,template:				false
-		,animateClose:			true
-		,round:					0
-		,qty:					1
-		,durationClose:			300
-		,qtyLimit:				999
-		,plusClass:				'.plus'
-		,minusClass:			'.minus'
-		,closeClass:			'.close'
-		,itemClass:				'.item'
-		,totalClass:			'.label .basket-cost'
-		,itemsContainer:		'.basket-content'
-		,toBasketButtons:		true // true - on, false - off
-		,toBasketClass:			'.addtobasket'
-		,toBasketAddedClass:	'added'
-		,toBasketContainer:		'#content'
-		,qtyInput:				'input[name=qty]'
+		api:						true
+		,template:					false
+		,animateClose:				true
+		,round:						0
+		,qty:						1
+		,durationClose:				300
+		,qtyLimit:					999
+		,plusClass:					'.plus'
+		,minusClass:				'.minus'
+		,closeClass:				'.close'
+		,itemClass:					'.item'
+		,totalClass:				'.label .basket-cost'
+		,hideDiscountIfNull:		true
+		,discountContainerClass:	'.discount-container'
+		,discountValueClass:		'.discount-value'
+		,itemsContainer:			'.basket-content'
+		,toBasketButtons:			true // true - on, false - off
+		,toBasketClass:				'.addtobasket'
+		,toBasketAddedClass:		'added'
+		,toBasketContainer:			'#content'
+		,qtyInput:					'input[name=qty]'
 		,animate:{
 			steps : 10, // from 3 to  15
 			duration : 500 // from 200 to 1000
@@ -101,21 +104,63 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 	 * @returns {string}
 	 */
 
-	// constructor
+	/**
+	 * @param root
+	 * @param conf
+	 * @returns {*}
+	 * @constructor
+	 */
 	function OBX_Basket(root, conf) {
 		// current instance
 		var self = this;
 		self.$ = $(self);
 
+		// private vars
+		var basket = {
+				currency: {
+					name: 'default'
+					,format: {
+						string: '#'
+						,dec_point: '.'
+						,dec_precision: 2
+						,thousands_sep: ' '
+					}
+				},
+				items:{},
+				total:0,
+				discount: 0,
+				count: 0
+			};
+			var items = [];
+			var itemsIDIndex = {}; // ratio of ids with the keys of the items array
+			var jq = {};
+			var keyboardKeyControl = true;
+			var itemTemplateSetup = false;
+			var bActiveJScrollPane = false;
+
 		// private functions
 		var jqBasketSetPrice = function(){ // set total basket cost in html node
 			if(jq.total.length && basket.total){
 				jq.total.html(self.formatPrice(basket.total));
-			}else return false;
+			} else return false;
 		};
+		var jqBasketSetDiscount = function(){ // set total basket cost in html node
+			if(jq.discountValue.length && basket.discount) {
+				if(conf.hideDiscountIfNull) {
+					if(basket.discount <= 0) {
+						jq.discountContainer.hide();
+					}
+					else {
+						jq.discountContainer.show();
+					}
+				}
+				jq.discountValue.html(self.formatPrice(basket.discount));
+			} else return false;
+		};
+
 		var jqBasketAnimatePrice = function(from){ // animate total basket cost in html node
 			from = parseFloat(from);
-			to = parseInt(basket.total);
+			var to = parseInt(basket.total);
 			if(from==to) return false; // no changes!
 
 			if(jq.total.length && from>=0 && to>=0){
@@ -158,24 +203,61 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 			}else return false;
 		};
 
-		// private vars
-		var basket = {
-				currency: {
-					name: 'default'
-					,format: {
-						 string: '#'
-						,dec_point: '.'
-						,dec_precision: 2
-						,thousands_sep: ' '
+		var jqBasketAnimateDiscount = function(from){ // animate total basket cost in html node
+			from = parseFloat(from);
+			var to = parseInt(basket.discount);
+			if(from==to) return false; // no changes!
+
+			if( !jq.discountValue.length || from<0 || to<0){
+				return false;
+			}
+			if(conf.hideDiscountIfNull && to > 0) {
+				jq.discountContainer.show();
+			}
+			// stop the previous animation
+			if(jq.discountValue.animatePriceInterval) clearInterval(jq.discountValue.animatePriceInterval);
+			// zeroing
+			var duration=0, delta=0, direction=0, steps=0, stepDuration=0, stepDelta=0, fault=0, step=0, tmpPrice = 0;
+			// setup
+			if(conf.animate.steps && conf.animate.steps>3 && conf.animate.steps<15) steps = conf.animate.steps-0;
+			else steps = 10;
+			if(conf.animate.duration && conf.animate.duration>200 && conf.animate.duration<1000) duration = conf.animate.duration-0;
+			else duration = 500;
+			// calculation
+			stepDuration = Math.floor(duration/steps);
+			if(!stepDuration || stepDuration<10) return false;
+			delta = Math.abs(parseInt(from-to));
+			if(delta<=0) return false;
+			direction = (to-from)<0 ? -1 : 1;
+			stepDelta = Math.floor(Math.abs(delta/steps));
+			fault = delta-(stepDelta*steps);
+
+			// price animation
+			jq.discountValue.animatePriceInterval = setInterval(
+				function(){
+					if(direction>0){ // to up
+						if(step==0) tmpPrice = from+stepDelta+fault-0;
+						else tmpPrice = tmpPrice+stepDelta-0;
+					}else{ // to down
+						if(step==0) tmpPrice = from-stepDelta-fault-0;
+						else tmpPrice = tmpPrice-stepDelta-0;
 					}
-				}, items:{}, total:0, count: 0
-			},
-			items = [],
-			itemsIDIndex = {}, // ratio of ids with the keys of the items array
-			jq = {},
-			keyboardKeyControl = true,
-			itemTemplateSetup = false,
-			bActiveJScrollPane = false;
+					var tmpFormatPrice = self.formatPrice(tmpPrice);
+					jq.discountValue.html(tmpFormatPrice);
+
+					step++;
+
+					// end?
+					if(step>=steps || tmpPrice==to) {
+						clearInterval(jq.discountValue.animatePriceInterval);
+						if(conf.hideDiscountIfNull && to == 0) {
+							jq.discountContainer.hide();
+						}
+					}
+				},
+				stepDuration
+			);
+		};
 
 		/**
 		 * number_format implementation from phpjs.org
@@ -235,13 +317,12 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
 				sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
 				dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-				s = '',
 				toFixedFix = function (n, prec) {
 					var k = Math.pow(10, prec);
 					return '' + Math.round(n * k) / k;
 				};
 			// Fix for IE parseFloat(0.55).toFixed(0) = 0;
-			s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+			var s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
 			if (s[0].length > 3) {
 				s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
 			}
@@ -300,10 +381,9 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				conf.ajaxSend = bSend?true:false;
 			}
 			,addPageItem : function(oItems){ // add from 1 object
-				var id = 0, i=0;
 				if(!$.obx.tools.isObject(oItems) || !oItems.id) return false;
-				id = parseInt(oItems.id, 10);
-				i = items.length;
+				var id = parseInt(oItems.id, 10);
+				var i = items.length;
 				items.push(oItems);
 				itemsIDIndex[id] = i;
 				return self;
@@ -326,8 +406,9 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				switch (true){
 					case ($.obx.tools.isArray(aoItems)): // add from array
 						for(var k in aoItems){
+							if(!aoItems.hasOwnProperty(k)) continue;
 							id = parseInt(aoItems[k].id, 10);
-							if(!id || itemsIDIndex.hasOwnProperty(id)) continue;
+							if(!id || itemsIDIndex.hasOwnProperty(''+id)) continue;
 							i = items.length;
 							items.push(aoItems[k]);
 							itemsIDIndex[id] = i;
@@ -339,8 +420,7 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 							break;
 						}
 						for(var p in aoItems){ // multiple item object
-							if(!aoItems[p].id) continue;
-							if(itemsIDIndex.hasOwnProperty(p)) continue;
+							if(!aoItems.hasOwnProperty(p) || !aoItems[p].id) continue;
 							i = items.length;
 							items.push(aoItems[p]);
 							itemsIDIndex[p] = i;
@@ -380,20 +460,33 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 						filling[item]=1; // qty = 1
 					break;
 					case ($.obx.tools.isArray(item)):
-						for (var k in item)
-							for(var p in item[k]) filling[p] = item[k][p] ? item[k][p] : 1;
+						for (var k in item) {
+							if(!item.hasOwnProperty(k)) continue;
+							for(var p in item[k]) {
+								if(!item[k].hasOwnProperty(p)) continue;
+								filling[p] = item[k][p] ? item[k][p] : 1;
+							}
+						}
 					break;
 					case ($.obx.tools.isObject(item)):
-						if(item.id) filling[item.id] = item.q ? item.q : 1;
-						else for(var p in item) filling[p] = item[p] ? item[p] : 1;
+						if(item.id) {
+							filling[item.id] = item.q ? item.q : 1;
+						}
+						else {
+							for(var pp in item) {
+								if(!item.hasOwnProperty(pp)) continue;
+								filling[pp] = item[pp] ? item[pp] : 1;
+							}
+						}
 					break;
 					default:
 						return false;
 				}
 				self.$.trigger('onBeforeItemAdd', [item, bAnimate]);
 				// exe
-				var item, key, qty, price, from;
+				var key, qty, price, discount, totalFrom, discountFrom;
 				for(var id  in filling){ // item id
+					if(!filling.hasOwnProperty(id)) continue;
 					if(basket.items[id]) continue; // already added
 					key = itemsIDIndex[id]-0; // key
 						if(!(key>=0)) continue;
@@ -403,14 +496,23 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 						if(!qty) qty=1;
 					price = parseFloat(item.price).toFixed(conf.round); // item price
 						if(!price) continue;
-					// basket
-					basket.items[id] = {qty:qty, price:price, cost:price*qty}; // basket item set
-						from = basket.total;
+					discount = parseFloat(item.discount).toFixed(conf.round); // item price
+					// basket item set
+					basket.items[id] = {
+						qty: qty,
+						price: price,
+						cost: price*qty,
+						discount: discount,
+						totalDiscount: discount*qty
+					};
+					totalFrom = basket.total;
+					discountFrom = basket.discount;
 					basket.total += price*qty; // basket total cost
+					basket.discount += discount*qty; // basket total discount
 					basket.count++;
 					// buttons
 					if(conf.toBasketButtons) {
-						var btn = jq.buttons.filter('[data-id='+id+']')
+						var btn = jq.buttons.filter('[data-id='+id+']');
 						btn.addClass(conf.toBasketAddedClass).val(conf.msg.toBasketHasValue);
 						btn.parent().addClass(conf.toBasketAddedClass);
 					}
@@ -422,8 +524,12 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 					self.$.trigger('onAfterItemAdd', [item, bAnimate]);
 					// basket total cost update
 					if(bAnimate){
-						jqBasketAnimatePrice(from);
-					}else jqBasketSetPrice();
+						jqBasketAnimatePrice(totalFrom);
+						jqBasketAnimateDiscount(discountFrom);
+					} else {
+						jqBasketSetPrice();
+						jqBasketSetDiscount();
+					}
 				}
 				//ajax
 				ajaxQuery({add:filling});
@@ -434,11 +540,13 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				if(bAnimate!==true) bAnimate = false;
 				qty = qty|0;
 				delta = delta|0;
-				if(!(qty>=0) && !delta) return false; // error
+				if(qty<0 && delta==0) return false; // error
 				var $item=null, tmplItem=null, id=0;
 				self.$.trigger('onBeforeItemUpdate', [item, qty, delta, bAnimate]);
 				switch (true){
 					// update from id
+					case ($.obx.tools.isString(item)):
+						id = item-0; // id
 					case ($.obx.tools.isInteger(item)):
 						id = item-0; // id
 						$item = jq.container.find(conf.itemClass+'[data-id='+id+']'); // jq item
@@ -470,31 +578,46 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 					break;
 				}
 				// calculation
-				var from = basket.total;
+				var priceFrom = basket.total;
+				var discountFrom = basket.discount;
+
 				if((qty>=0)){ // update
 					if(qty==0){ // remove
 						self.removeBasketItem(id, bAnimate);
 						return self;
 					}
-					basket.total = basket.total-basket.items[id].cost;
+					basket.total = (basket.total - basket.items[id].cost);
+					basket.discount = (basket.discount - basket.items[id].totalDiscount);
 					basket.items[id].qty  = qty;
-					basket.items[id].cost  = qty*items[id].price;
+					basket.items[id].cost  = qty*basket.items[id].price;
+					basket.items[id].totalDiscount  = qty*basket.items[id].discount;
 					basket.total += basket.items[id].cost;
-				}else if(delta){ // change
+					basket.discount += basket.items[id].totalDiscount;
+				}else if(delta != 0){ // change
 					if(delta<0 && basket.items[id].qty<=Math.abs(delta)){ // remove
 						self.removeBasketItem(id, bAnimate);
 						return self;
 					}
-					basket.total = basket.total-basket.items[id].cost;
-					basket.items[id].qty  = basket.items[id].qty+delta;
-					basket.items[id].cost  = qty*items[id].price;
+					qty = basket.items[id].qty+delta;
+					basket.total = (basket.total - basket.items[id].cost);
+					basket.discount = (basket.discount - basket.items[id].totalDiscount);
+					basket.items[id].qty  = qty;
+					basket.items[id].cost  = qty*basket.items[id].price;
+					basket.items[id].totalDiscount  = qty*basket.items[id].discount;
 					basket.total += basket.items[id].cost;
+					basket.discount += basket.items[id].totalDiscount;
 				}
 				// item re-render
 				tmplItem.update();
 				// basket cost update
-				if(bAnimate) jqBasketAnimatePrice(from);
-				else jqBasketSetPrice();
+				if(bAnimate) {
+					jqBasketAnimatePrice(priceFrom);
+					jqBasketAnimateDiscount(discountFrom);
+				}
+				else {
+					jqBasketSetPrice();
+					jqBasketSetDiscount();
+				}
 				//ajax
 				ajaxQuery({update:{id:id, qty:basket.items[id].qty}});
 				return self;
@@ -506,15 +629,24 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				if(basket.items[id]){
 					self.$.on('onBeforeItemRemove', [id, bAnimate]);
 					// item
-					$item = self.getBasketItem(id);
+					var $item = self.getBasketItem(id);
 					if(!$item.length) return false;
 					// calculation
-					var from = basket.total;
-					basket.total = basket.total-basket.items[id].cost; // remove from total cost
+					var costFrom = basket.total;
+					var discountFrom = basket.discount;
+					basket.total = (basket.total - basket.items[id].cost); // remove from total cost
+					basket.discount = (basket.discount - basket.items[id].totalDiscount); // remove from total discount
 					basket.count--;
 					delete(basket.items[id]); // remove from basket
-					if(bAnimate) jqBasketAnimatePrice(from); // animate basket total cost
-					else jqBasketSetPrice();
+					if(bAnimate) {
+						// animate basket total cost and discount
+						jqBasketAnimatePrice(costFrom);
+						jqBasketAnimateDiscount(discountFrom);
+					}
+					else {
+						jqBasketSetPrice();
+						jqBasketSetDiscount();
+					}
 					// buttons
 					if(conf.toBasketButtons) {
 						var btn = jq.buttons.filter('[data-id='+id+']');
@@ -523,7 +655,7 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 					}
 					// animate & remove
 					if(conf.animateClose && bAnimate){ // animate item?
-						duration = conf.durationClose ? parseInt(conf.durationClose) : 300; // animate duration
+						var duration = conf.durationClose ? parseInt(conf.durationClose) : 300; // animate duration
 						$item.animate({height: 0}, {duration: duration}); // animate
 						setTimeout(function(){ // remove item
 							$item.remove();
@@ -540,10 +672,16 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 			}
 			,clearBasket: function() {
 				for(var id in basket.items) {
+					if(!basket.items.hasOwnProperty(id)) continue;
 					self.removeBasketItem(id, false);
 				}
 				clearInterval(jq.total.animatePriceInterval);
+				clearInterval(jq.discountValue.animatePriceInterval);
 				jq.total.text('0');
+				jq.discountValue.text('0');
+				if(conf.hideDiscountIfNull) {
+					jq.discountContainer.hide();
+				}
 				jq.container.text('');
 			}
 			,getBasketItem : function(id){
@@ -553,11 +691,17 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				}
 				return false;
 			}
+			,getBasketItemList: function() {
+				return $.extend(true, {}, basket.items);
+			}
 			,getBasketTotal: function() {
 				return basket.total;
 			}
 			,getBasketCount: function() {
 				return basket.count;
+			}
+			,getBasketDiscount: function() {
+				return basket.discount;
 			}
 			,setBasketItemsFromServer: function() {
 				if (conf.ajaxSend) {
@@ -572,11 +716,11 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 			}
 			,setItemTemplate : function(id){
 				jq.template = $(id);
-				if(jq.template.length){
+				itemTemplateSetup = false;
+				if(jq.template.length) {
 					itemTemplateSetup = true;
 					return self;
-				};
-				itemTemplateSetup = false;
+				}
 				return false;
 			}
 			,activateJScrollPane: function(startFromItemsQty, lessDevelTimeout) {
@@ -639,7 +783,9 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				bActiveJScrollPane = true;
 				return jScrollPaneAPI;
 			}
-			
+			,getConfig: function(){
+				return conf;
+			}
 			,setAjaxURL: function() {
 				
 			}
@@ -701,7 +847,8 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 								self.$.trigger('onBeforeAjaxSuccess', [data, textStatus, jqXHR]);
 
 								if( data.messages.length>0 ) {
-									for(keyMessage in data.messages) {
+									for(var keyMessage in data.messages) {
+										if(!data.messages.hasOwnProperty(keyMessage)) continue;
 										if( data.messages[keyMessage] && data.messages[keyMessage].TYPE == 'E') {
 											alert(data.messages[keyMessage].TEXT);
 											self.clearBasket();
@@ -756,19 +903,27 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 		});
 
 		// template tools
-		jtmplTools = {
-			getDisplayCost : function(){
-				id = this.data.id;
+		var jtmplTools = {
+			getDisplayCost: function(){
+				var id = this.data.id;
 				if(basket.items[id]){
-					cost = basket.items[id].cost;
+					var cost = basket.items[id].cost;
 					if(cost) return self.formatPrice(cost);
 					else return '';
 				}else return '';
 			},
+			getDisplayDiscount: function() {
+				var id = this.data.id;
+				if(basket.items[id]) {
+					var discount = basket.items[id].totalDiscount;
+					if(discount) return self.formatPrice(discount);
+					else return '';
+				} else return '';
+			},
 			getQty : function(){
-				id = this.data.id;
+				var id = this.data.id;
 				if(basket.items[id]){
-					qty = basket.items[id].qty;
+					var qty = basket.items[id].qty;
 					if(qty) return qty; else return 1;
 				}else return '';
 			}
@@ -788,7 +943,7 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 
 
 		// events handlers
-		ehandlers = {
+		var ehandlers = {
 			close : function(e){
 				e.preventDefault(); // if a - prevented click
 				e.stopPropagation(); // only this event
@@ -796,78 +951,28 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				var $this = $(this);
 				var $item = $this.parents(conf.itemClass);
 				if($item.length){
-					id = $item.attr('data-id');
+					var id = $item.attr('data-id');
 					if(id) return self.removeBasketItem(id);
 					else return false;
 				}else return false;
 			}
-			,plus : function(e){
+			,plus : function(e) {
 				e.preventDefault(); // if a - prevented click
 				var $this = $(this);
 				var $item = $this.parents(conf.itemClass);
-				var tmplItem = $item.tmplItem();
-
-				if($item.length && tmplItem.key){
-					var id = $item.attr('data-id');
-					if(basket.items[id]){
-
-						if(basket.items[id].qty == conf.qtyLimit) return false; // limit
-						// +++ что-то не понятное
-						// item
-						//if(items[id]>=0) return false;
-						// ^^^ что-то не понятное
-						// basket
-						basket.items[id].qty++;
-						price = parseFloat(parseFloat(basket.items[id].price).toFixed(conf.round));
-						basket.items[id].cost = basket.items[id].qty*price;
-						from = basket.total;
-						basket.total = parseFloat(parseFloat(basket.total + price).toFixed(conf.round));
-						// item re-render
-						tmplItem.update();
-						// basket cost update
-						jqBasketAnimatePrice(from);
-						// ajax
-						ajaxQuery({update:{id:id, qty:basket.items[id].qty}});
-					}else return false;
-				}else return false;
+				var id = parseInt($item.attr('data-id'));
+				if(basket.items[id]){
+					self.updateBasketItem(id, -1, 1, true);
+				}
 			}
-			,minus : function(e){
+			,minus : function(e) {
 				e.preventDefault(); // if a - prevented click
-
-				$this = $(this);
-				$item = $this.parents(conf.itemClass);
-				var tmplItem = $item.tmplItem();
-
-				if($item.length && tmplItem.key){
-					var id = $item.attr('data-id');
-					if(basket.items[id]){
-						// +++ что-то не понятное
-						// item
-						//if(items[id]>=0) return false;
-						// ^^^ что-то не понятное
-
-						// remove?
-						if(basket.items[id].qty==1){
-							if( confirm(conf.msg.removeItem.replace(/#NAME#/, tmplItem.data.name)) ) {
-								self.removeBasketItem(id);
-								return true;
-							}else return false;
-						}
-						// basket
-						basket.items[id].qty--;
-						price = parseFloat(basket.items[id].price).toFixed(conf.round);
-						basket.items[id].cost = basket.items[id].qty*price;
-						from = basket.total;
-						basket.total = basket.total - price;
-						// item re-render
-						tmplItem.update();
-						// basket cost update
-						jqBasketAnimatePrice(from);
-						// ajax
-						ajaxQuery({update:{id:id, qty:basket.items[id].qty}});
-
-					}else return false;
-				}else return false;
+				var $this = $(this);
+				var $item = $this.parents(conf.itemClass);
+				var id = parseInt($item.attr('data-id'));
+				if(basket.items[id]){
+					self.updateBasketItem(id, -1, -1, true);
+				}
 			}
 			,keydown : function(e){
 				// guide buttons (arrows)
@@ -884,19 +989,14 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 						(e.keyCode==8) || // backspace
 						(e.keyCode==46) // delete
 					){
-					var curValue = parseInt(this.value);
-					this.beforeValue = curValue;
-//					if (!this.unit) {
-//						this.unit = this.value.replace("" + curValue, "")	// - value
-//							.replace(/^\s+|\s+$/g, '');			// trim()
-//					}
+					this.beforeValue = parseInt(this.value);
 					keyboardKeyControl = true; // anything changed
 					return true;
 				}else return false;
 			}
 			,keyup : function(){
 				var curVal = parseInt(this.value);
-//				var unit = " "+this.unit;
+				//var unit = " "+this.unit;
 				if(!keyboardKeyControl || this.beforeValue == curVal){ // keyboard control
 					keyboardKeyControl = true;
 					return false;
@@ -904,7 +1004,7 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 				if(this.obxTimeoutKeyUp) clearTimeout(this.obxTimeoutKeyUp); // cancel
 				// setup
 				var $this = $(this);
-				$item = $this.closest(conf.itemClass);
+				var $item = $this.closest(conf.itemClass);
 				var tmplItem = $item.tmplItem();
 				var value = $this.val();
 				var id = $item.attr('data-id');
@@ -925,17 +1025,7 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 						}
 					}
 					this.obxTimeoutKeyUp = setTimeout(function(){ // timeout for exe
-						// item
-						basket.items[id].qty = curVal;
-						var oldCost = basket.items[id].cost;
-						// basket
-						basket.items[id].cost = basket.items[id].qty*basket.items[id].price;
-						var from = basket.total;
-						basket.total = basket.total-oldCost+basket.items[id].cost;
-						// item re-render
-						tmplItem.update();
-						// basket cost update
-						jqBasketAnimatePrice(from);
+						self.updateBasketItem(id, curVal, 0, true);
 					}, 500);
 					return true;
 				}else return true; // onchange make a rollback
@@ -961,6 +1051,9 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 		jq.container = root.find(conf.itemsContainer);
 			if(!jq.container.length) return false;
 		jq.total = root.find(conf.totalClass);
+		jq.discountContainer = root.find(conf.discountContainerClass);
+		jq.discountValue = jq.discountContainer.find(conf.discountValueClass);
+
 		jq.buttons = {};
 		if(conf.toBasketClass){
 			jq.buttons = $(conf.toBasketClass, conf.toBasketContainer ? conf.toBasketContainer : 'body');
@@ -1016,207 +1109,78 @@ if(typeof(jQuery) == 'undefined') jQuery = false;
 		if( $.isFunction($.mousewheel) ) {
 			return false;
 		}
-		/*! Copyright (c) 2013 Brandon Aaron (http://brandon.aaron.sh)
-		 * Licensed under the MIT License (LICENSE.txt).
-		 *
-		 * Version: 3.1.9
-		 *
-		 * Requires: jQuery 1.2.2+
-		 */
+		(function($) {
 
-		(function (factory) {
-			if ( typeof define === 'function' && define.amd ) {
-				// AMD. Register as an anonymous module.
-				define(['jquery'], factory);
-			} else if (typeof exports === 'object') {
-				// Node/CommonJS style for Browserify
-				module.exports = factory;
-			} else {
-				// Browser globals
-				factory(jQuery);
-			}
-		}(function ($) {
+			var types = ['DOMMouseScroll', 'mousewheel'];
 
-			var toFix  = ['wheel', 'mousewheel', 'DOMMouseScroll', 'MozMousePixelScroll'],
-				toBind = ( 'onwheel' in document || document.documentMode >= 9 ) ?
-					['wheel'] : ['mousewheel', 'DomMouseScroll', 'MozMousePixelScroll'],
-				slice  = Array.prototype.slice,
-				nullLowestDeltaTimeout, lowestDelta;
-
-			if ( $.event.fixHooks ) {
-				for ( var i = toFix.length; i; ) {
-					$.event.fixHooks[ toFix[--i] ] = $.event.mouseHooks;
+			if ($.event.fixHooks) {
+				for ( var i=types.length; i; ) {
+					$.event.fixHooks[ types[--i] ] = $.event.mouseHooks;
 				}
 			}
 
-			var special = $.event.special.mousewheel = {
-				version: '3.1.9',
-
+			$.event.special.mousewheel = {
 				setup: function() {
 					if ( this.addEventListener ) {
-						for ( var i = toBind.length; i; ) {
-							this.addEventListener( toBind[--i], handler, false );
+						for ( var i=types.length; i; ) {
+							this.addEventListener( types[--i], handler, false );
 						}
 					} else {
 						this.onmousewheel = handler;
 					}
-					// Store the line height and page height for this particular element
-					$.data(this, 'mousewheel-line-height', special.getLineHeight(this));
-					$.data(this, 'mousewheel-page-height', special.getPageHeight(this));
 				},
 
 				teardown: function() {
 					if ( this.removeEventListener ) {
-						for ( var i = toBind.length; i; ) {
-							this.removeEventListener( toBind[--i], handler, false );
+						for ( var i=types.length; i; ) {
+							this.removeEventListener( types[--i], handler, false );
 						}
 					} else {
 						this.onmousewheel = null;
 					}
-				},
-
-				getLineHeight: function(elem) {
-					return parseInt($(elem)['offsetParent' in $.fn ? 'offsetParent' : 'parent']().css('fontSize'), 10);
-				},
-
-				getPageHeight: function(elem) {
-					return $(elem).height();
-				},
-
-				settings: {
-					adjustOldDeltas: true
 				}
 			};
 
 			$.fn.extend({
 				mousewheel: function(fn) {
-					return fn ? this.bind('mousewheel', fn) : this.trigger('mousewheel');
+					return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
 				},
 
 				unmousewheel: function(fn) {
-					return this.unbind('mousewheel', fn);
+					return this.unbind("mousewheel", fn);
 				}
 			});
 
 
 			function handler(event) {
-				var orgEvent   = event || window.event,
-					args       = slice.call(arguments, 1),
-					delta      = 0,
-					deltaX     = 0,
-					deltaY     = 0,
-					absDelta   = 0;
+				var orgEvent = event || window.event, args = [].slice.call( arguments, 1 ), delta = 0, returnValue = true, deltaX = 0, deltaY = 0;
 				event = $.event.fix(orgEvent);
-				event.type = 'mousewheel';
+				event.type = "mousewheel";
 
 				// Old school scrollwheel delta
-				if ( 'detail'      in orgEvent ) { deltaY = orgEvent.detail * -1;      }
-				if ( 'wheelDelta'  in orgEvent ) { deltaY = orgEvent.wheelDelta;       }
-				if ( 'wheelDeltaY' in orgEvent ) { deltaY = orgEvent.wheelDeltaY;      }
-				if ( 'wheelDeltaX' in orgEvent ) { deltaX = orgEvent.wheelDeltaX * -1; }
+				if ( orgEvent.wheelDelta ) { delta = orgEvent.wheelDelta/120; }
+				if ( orgEvent.detail     ) { delta = -orgEvent.detail/3; }
 
-				// Firefox < 17 horizontal scrolling related to DOMMouseScroll event
-				if ( 'axis' in orgEvent && orgEvent.axis === orgEvent.HORIZONTAL_AXIS ) {
-					deltaX = deltaY * -1;
+				// New school multidimensional scroll (touchpads) deltas
+				deltaY = delta;
+
+				// Gecko
+				if ( orgEvent.axis !== undefined && orgEvent.axis === orgEvent.HORIZONTAL_AXIS ) {
 					deltaY = 0;
+					deltaX = -1*delta;
 				}
 
-				// Set delta to be deltaY or deltaX if deltaY is 0 for backwards compatabilitiy
-				delta = deltaY === 0 ? deltaX : deltaY;
-
-				// New school wheel delta (wheel event)
-				if ( 'deltaY' in orgEvent ) {
-					deltaY = orgEvent.deltaY * -1;
-					delta  = deltaY;
-				}
-				if ( 'deltaX' in orgEvent ) {
-					deltaX = orgEvent.deltaX;
-					if ( deltaY === 0 ) { delta  = deltaX * -1; }
-				}
-
-				// No change actually happened, no reason to go any further
-				if ( deltaY === 0 && deltaX === 0 ) { return; }
-
-				// Need to convert lines and pages to pixels if we aren't already in pixels
-				// There are three delta modes:
-				//   * deltaMode 0 is by pixels, nothing to do
-				//   * deltaMode 1 is by lines
-				//   * deltaMode 2 is by pages
-				if ( orgEvent.deltaMode === 1 ) {
-					var lineHeight = $.data(this, 'mousewheel-line-height');
-					delta  *= lineHeight;
-					deltaY *= lineHeight;
-					deltaX *= lineHeight;
-				} else if ( orgEvent.deltaMode === 2 ) {
-					var pageHeight = $.data(this, 'mousewheel-page-height');
-					delta  *= pageHeight;
-					deltaY *= pageHeight;
-					deltaX *= pageHeight;
-				}
-
-				// Store lowest absolute delta to normalize the delta values
-				absDelta = Math.max( Math.abs(deltaY), Math.abs(deltaX) );
-
-				if ( !lowestDelta || absDelta < lowestDelta ) {
-					lowestDelta = absDelta;
-
-					// Adjust older deltas if necessary
-					if ( shouldAdjustOldDeltas(orgEvent, absDelta) ) {
-						lowestDelta /= 40;
-					}
-				}
-
-				// Adjust older deltas if necessary
-				if ( shouldAdjustOldDeltas(orgEvent, absDelta) ) {
-					// Divide all the things by 40!
-					delta  /= 40;
-					deltaX /= 40;
-					deltaY /= 40;
-				}
-
-				// Get a whole, normalized value for the deltas
-				delta  = Math[ delta  >= 1 ? 'floor' : 'ceil' ](delta  / lowestDelta);
-				deltaX = Math[ deltaX >= 1 ? 'floor' : 'ceil' ](deltaX / lowestDelta);
-				deltaY = Math[ deltaY >= 1 ? 'floor' : 'ceil' ](deltaY / lowestDelta);
-
-				// Add information to the event object
-				event.deltaX = deltaX;
-				event.deltaY = deltaY;
-				event.deltaFactor = lowestDelta;
-				// Go ahead and set deltaMode to 0 since we converted to pixels
-				// Although this is a little odd since we overwrite the deltaX/Y
-				// properties with normalized deltas.
-				event.deltaMode = 0;
+				// Webkit
+				if ( orgEvent.wheelDeltaY !== undefined ) { deltaY = orgEvent.wheelDeltaY/120; }
+				if ( orgEvent.wheelDeltaX !== undefined ) { deltaX = -1*orgEvent.wheelDeltaX/120; }
 
 				// Add event and delta to the front of the arguments
 				args.unshift(event, delta, deltaX, deltaY);
 
-				// Clearout lowestDelta after sometime to better
-				// handle multiple device types that give different
-				// a different lowestDelta
-				// Ex: trackpad = 3 and mouse wheel = 120
-				if (nullLowestDeltaTimeout) { clearTimeout(nullLowestDeltaTimeout); }
-				nullLowestDeltaTimeout = setTimeout(nullLowestDelta, 200);
-
 				return ($.event.dispatch || $.event.handle).apply(this, args);
 			}
 
-			function nullLowestDelta() {
-				lowestDelta = null;
-			}
-
-			function shouldAdjustOldDeltas(orgEvent, absDelta) {
-				// If this is an older event and the delta is divisable by 120,
-				// then we are assuming that the browser is treating this as an
-				// older mouse wheel event and that we should divide the deltas
-				// by 40 to try and get a more usable deltaFactor.
-				// Side note, this actually impacts the reported scroll distance
-				// in older browsers and can cause scrolling to be slower than native.
-				// Turn this off by setting $.event.special.mousewheel.settings.adjustOldDeltas to false.
-				return special.settings.adjustOldDeltas && orgEvent.type === 'mousewheel' && absDelta % 120 === 0;
-			}
-
-		}));
+		})(jQuery);
 	};
 
 
