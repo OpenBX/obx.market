@@ -196,6 +196,11 @@ class Basket extends MessagePoolDecorator
 		}
 		return new self($rsBasket);
 	}
+
+	/**
+	 * @param $orderID
+	 * @return self
+	 */
 	static public function getByOrderID($orderID) {
 		if( ! self::$_bDBSimpleObjectInitialized ) self::_initDBSimpleObjects();
 		$rsBasket = self::$_BasketDBS->getList(null, array('ORDER_ID' => $orderID));
@@ -311,6 +316,20 @@ class Basket extends MessagePoolDecorator
 			return self::$_CurrencyFormatDBS->formatPrice($cost, $this->_arFields['CURRENCY']);
 		}
 		return $cost;
+	}
+
+	/**
+	 * Получить суммарную скидку на товары корзины
+	 */
+	public function getDiscountValue($bFormat = false) {
+		$discount = 0;
+		foreach($this->_arProductList as &$arItem) {
+			$discount += (floatVal($arItem['DISCOUNT_VALUE']) * floatVal($arItem['QUANTITY']));
+		}
+		if($bFormat) {
+			return self::$_CurrencyFormatDBS->formatPrice($discount, $this->_arFields['CURRENCY']);
+		}
+		return $discount;
 	}
 
 	/**

@@ -242,21 +242,20 @@ SQL;
 			$arResult[$i] = $arPrice;
 
 			$arResult[$i]["VALUE"] = $arPriceProp["VALUE"];
-			// +++ TODO : Добавить поддрежку дисконта
 			$resProp = \CIBlockElement::GetProperty($arPrice["IBLOCK_ID"], $productID, array(),
 				array(
 					"ID" => $arPrice["DISCOUNT_VAL_PROP_ID"]
 				));
-			$discountValue = 0;
+			$discountPercent = 0;
 			if ($arDiscount = $resProp->Fetch()) {
-				if (!floatval($arDiscount["VALUE"]) < 0.001) {
-					$discountValue = $arDiscount["VALUE"];
+				if (floatval($arDiscount["VALUE"]) > 1) {
+					$discountPercent = floatval($arDiscount["VALUE"]);
 				}
 			}
-
+			$discountValue = floatval($arPriceProp["VALUE"]*$discountPercent/100);
+			$arResult[$i]["DISCOUNT_PERCENT"] = $discountPercent;
 			$arResult[$i]["DISCOUNT_VALUE"] = $discountValue;
-			$arResult[$i]["TOTAL_VALUE"] = $arPriceProp["VALUE"] - ($arPriceProp["VALUE"]*$discountValue/100);
-			// ^^^
+			$arResult[$i]["TOTAL_VALUE"] = $arPriceProp["VALUE"] - $discountValue;
 			$arResult[$i]["AVAILABLE"] = (in_array($arPrice["PRICE_ID"], $arAvailPricesForUser)) ? "Y" : "N";
 			$arResult[$i]["IS_OPTIMAL"] = 'N';
 
