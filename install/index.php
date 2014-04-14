@@ -227,9 +227,30 @@ class obx_market extends CModule {
 		$this->bSuccessUnInstallEvents = true;
 		return $this->bSuccessUnInstallEvents;
 	}
-	
-	public function InstallTasks() { $this->bSuccessInstallTasks = true; return $this->bSuccessInstallTasks; }
-	public function UnInstallTasks() { $this->bSuccessUnInstallTasks = true; return $this->bSuccessUnInstallTasks; }
+
+
+	public function GetModuleTasks() {
+		return array(
+			"order_manage" => array(
+				"LETTER" => "O",
+				"BINDING" => "module",
+				"OPERATIONS" => array(
+					"view_order",
+					"edit_order",
+				),
+			),
+		);
+	}
+	public function InstallTasks() {
+		$this->bSuccessInstallTasks = true;
+		parent::InstallTasks();
+		return $this->bSuccessInstallTasks;
+	}
+	public function UnInstallTasks() {
+		$this->bSuccessUnInstallTasks = true;
+		parent::UnInstallTasks();
+		return $this->bSuccessUnInstallTasks;
+	}
 
 	public function InstallDeps() {
 		$arDepsList = $this->getDepsList();
