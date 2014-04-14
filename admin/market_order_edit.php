@@ -101,10 +101,15 @@ if ($REQUEST_METHOD == "POST" // проверка метода вызова ст
 	$DB->StartTransaction();
 	$arItems = $_REQUEST['PRODUCTS'];
 	$arProps = $_REQUEST['PROPERTIES'];
+	$arFields = $_REQUEST['FIELDS'];
+	$statusID = null;
+	if( array_key_exists('STATUS_ID', $arFields) ) {
+		$statusID = intval($arFields['STATUS_ID']);
+	}
 
 	if ($ID > 0) {
 		$bSuccess = false;
-		if ($Order->setFields($_REQUEST['FIELDS'])) {
+		if ($Order->setFields($arFields)) {
 			$bSuccess = true;
 
 			if (!empty($arItems)) {
@@ -117,20 +122,17 @@ if ($REQUEST_METHOD == "POST" // проверка метода вызова ст
 				}
 
 				$bSuccess = $Order->setItems($arFilteredItems,true);
-				if(!$bSuccess) {
-					$arErrorList = $Order->getErrors();
-					foreach($arErrorList as $arError) {
-						$arErrors[] = $arError['TEXT'].' code: '.$arError['CODE'];
-					}
-				}
 			}
 			if (!empty($arProps)) {
-				$bSuccess = $Order->setProperties($arProps);
+				$bSuccess = $Order->setProperties($arProps) && $bSuccess;
+			}
+
+			if(null !== $statusID) {
+				$bSuccess = $Order->setStatus($statusID) && $bSuccess;
 			}
 		}
 
 	} else {
-
 		$newID = $OrderDBS->add($_REQUEST['FIELDS']);
 		$bSuccess = ($newID > 0) ? true : false;
 		if ($bSuccess) {
@@ -148,10 +150,8 @@ if ($REQUEST_METHOD == "POST" // проверка метода вызова ст
 				$bSuccess = $Order->setItems($arFilteredItems,true);
 			}
 			if (!empty($arProps)) {
-				$bSuccess = $Order->setProperties($arProps);
+				$bSuccess = $Order->setProperties($arProps) && $bSuccess;
 			}
-		}else{
-			//выкинуть ошибку
 		}
 
 	}
@@ -175,8 +175,9 @@ if ($REQUEST_METHOD == "POST" // проверка метода вызова ст
 	if ($apply != '') {
 		// если была нажата кнопка 'Применить' - отправляем обратно на форму.
 		LocalRedirect('/bitrix/admin/obx_market_order_edit.php?ID=' . $ID . '&' . $TabControl->ActiveTabParam());
-	} else {
-		// если была нажата кнопка 'Сохранить' - отправляем к списку элементов.
+	} elseif($bSuccess) {
+		// если была нажата кнопка 'Сохранить' - отправляем к списку элементов
+		// только в том случае если не было ошибок
 		LocalRedirect('/bitrix/admin/obx_market_orders.php');
 	}
 }
@@ -291,8 +292,7 @@ $TabControl->BeginNextTab();
 				$sSelected = ' selected="selected"';
 			}
 			?>
-			<option<?=$sSelected?> value="<?=$arStatus['ID']?>">[<?=$arStatus['ID']?>
-				] <?=$arStatus['NAME']?></option>
+			<option<?=$sSelected?> value="<?=$arStatus['ID']?>">[<?=$arStatus['ID']?>] <?=$arStatus['NAME']?></option>
 			<? endforeach?>
 		</select>
 	</td>

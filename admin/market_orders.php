@@ -99,7 +99,7 @@ foreach($arOrderStatusListRaw as &$arOrderStatus) {
 <?
 $arOrderStatusList4Select = array();
 foreach($arOrderStatusList as &$arStatus) {
-	$arOrderStatusList4Select[$arStatus['ID']] = '['.$arStatus['ID'].']&nbsp;'.$arStatus['NAME'];
+	$arOrderStatusList4Select[$arStatus['ID']] = '['.$arStatus['ID'].'] '.$arStatus['NAME'];
 }
 unset($arOrderStatusListRaw);
 
@@ -238,7 +238,7 @@ if( ($arID = $lAdmin->GroupAction()) ) {
 				$DB->StartTransaction();
 				if (!$OrderDBS->delete($ID)){
 					$DB->Rollback();
-					$lAdmin->AddGroupError(GetMessage('OBX_STATUS_DEL_ERROR_1'), $ID);
+					$lAdmin->AddGroupError(GetMessage('OBX_STATUS_DEL_ERROR_1').': '.$OrderDBS->getLastError(), $ID);
 				}
 				$DB->Commit();
 				break;
@@ -251,9 +251,11 @@ if( ($arID = $lAdmin->GroupAction()) ) {
 				$DB->StartTransaction();
 
 				$statusID = intval($arAction[1]);
-				if(!Order::getOrder($ID)->setStatus($statusID)){
+				$Order = Order::getOrder($ID);
+				if(!$Order->setStatus($statusID)){
 					$DB->Rollback();
-					$lAdmin->AddGroupError(GetMessage('OBX_STATUS_CHANGE_ERROR_1'), $ID);
+					$lastError = $Order->getLastError();
+					$lAdmin->AddGroupError(GetMessage('OBX_STATUS_CHANGE_ERROR_1').': '.$lastError, $ID);
 				}
 				$DB->Commit();
 			}
@@ -357,7 +359,7 @@ while( $arRes = $rsData->NavNext(true, 'f_') ) {
 
 	$row->AddViewField('USER_ID', '['.$f_USER_ID.']&nbsp;'.$f_USER_NAME);
 
-	$row->AddViewField('STATUS_ID', '['.$f_STATUS_ID.']&nbsp;'.$arOrderStatusList[$f_STATUS_ID]['NAME']);
+	//$row->AddViewField('STATUS_ID', '['.$f_STATUS_ID.']&nbsp;'.$arOrderStatusList[$f_STATUS_ID]['NAME']);
 	$row->AddSelectField('STATUS_ID', $arOrderStatusList4Select);
 	$row->AddViewField('CURRENCY', $arCurrencyList[$f_CURRENCY]['LANG'][LANGUAGE_ID]['NAME']);
 	//$row->AddViewField("COST", ($f_DELIVERY_COST + $f_ITEMS_COST + $f_PAY_TAX_VALUE - $f_DISCOUNT_VALUE));
