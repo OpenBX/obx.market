@@ -19,6 +19,10 @@ IncludeModuleLangFile(__FILE__);
 
 class Order extends MessagePoolDecorator {
 
+	const EVENT_FINISH = 'onMakeOrderFinish';
+	const EVENT_MODULE = 'obx.market';
+
+
 	/**
 	* @var null|OrderDBS
 	*/
@@ -38,6 +42,11 @@ class Order extends MessagePoolDecorator {
 	* @var null|OrderPropertyDBS
 	*/
 	protected $_OrderPropertyDBS = null;
+
+	/**
+	 * @var null|OrderPropertyValuesDBS
+	 */
+	protected $_OrderPropertyValuesDBS = null;
 
 	/**
 	* @var null|OrderCommentDBS
@@ -74,6 +83,8 @@ class Order extends MessagePoolDecorator {
 	protected $_costTotalValue = 0;
 	protected $_weightValue = 0;
 	protected $_discountValue = 0;
+
+	protected $_arItemsCache = null;
 
 	// Кострутор объекта из БД или из ID заказа
 	protected function __construct() {
@@ -160,6 +171,33 @@ class Order extends MessagePoolDecorator {
 		$bSuccess = $Order->read($newID);
 		if (!$bSuccess) {
 			$arErrors = $Order->getErrors();
+			return null;
+		}
+		return $Order;
+	}
+
+	static public function makeOrder($arFields = null, Basket $Basket = null, &$arErrors = array()) {
+		$arProperties = null;
+		if( array_key_exists('PROPERTIES', $arFields) ) {
+			$arProperties = $arFields['PROPERTIES'];
+		}
+		$Order = static::add($arFields, $arErrors);
+		if(null === $Order) {
+			return null;
+		}
+		if(null !== $arProperties) {
+			$Order->setProperties($arProperties);
+		}
+		if($Basket instanceof Basket) {
+			$OrderBasket = Basket::getByOrderID($Order->getID());
+			$OrderBasket->mergeBasket($Basket, true);
+			$arLastBasketError = $OrderBasket->getLastError('ARRAY');
+			if(null !== $arLastBasketError) {
+				$arErrors[] = $arLastBasketError;
+			}
+		}
+		if( false === $Order->callFinishEvent() ) {
+			$arErrors[] = $Order->getLastError('ARRAY');
 			return null;
 		}
 		return $Order;
@@ -284,13 +322,9 @@ class Order extends MessagePoolDecorator {
 	* Получить значения свойств заказа
 	* @param null|array $arSort
 	* @param null $arFilter
-	* @param null $arGroupBy
-	* @param null $arPagination
-	* @param null $arSelect
-	* @param bool $bShowNullFields
 	* @return array
 	*/
-	public function getProperties($arSort = null, $arFilter = null, $arGroupBy = null, $arPagination = null, $arSelect = null, $bShowNullFields = true) {
+	public function getProperties($arSort = null, $arFilter = null) {
 		$arResult = array();
 
 		if (is_array($arFilter)) {
@@ -298,22 +332,88 @@ class Order extends MessagePoolDecorator {
 		} else {
 			$arFilter = array('ORDER_ID' => $this->_arOrder['ID']);
 		}
-		$arProperties = $this->_OrderPropertyDBS->getListArray();
-
-		$arOrderProperties = $this->_OrderPropertyValuesDBS->getListArray(
-			$arSort, $arFilter, $arGroupBy, $arPagination, $arSelect, $bShowNullFields
+		$arSortRaw = $arSort;
+		$arSort = array();
+		if( array_key_exists('ID', $arSortRaw) ) {
+			$arSort['PROPERTY_ID'] = $arSortRaw['ID'];
+		}
+		if( array_key_exists('PROPERTY_ID', $arSortRaw) ) {
+			$arSort['PROPERTY_ID'] = $arSortRaw['PROPERTY_ID'];
+		}
+		if( array_key_exists('CODE', $arSortRaw) ) {
+			$arSort['PROPERTY_CODE'] = $arSortRaw['CODE'];
+		}
+		if( array_key_exists('NAME', $arSortRaw) ) {
+			$arSort['PROPERTY_NAME'] = $arSortRaw['NAME'];
+		}
+		if( array_key_exists('PROPERTY_TYPE', $arSortRaw) ) {
+			$arSort['PROPERTY_TYPE'] = $arSortRaw['PROPERTY_TYPE'];
+		}
+		if( array_key_exists('SORT', $arSortRaw) ) {
+			$arSort['PROPERTY_SORT'] = $arSortRaw['SORT'];
+		}
+		if( array_key_exists('VALUE', $arSortRaw) ) {
+			$arSort['VALUE'] = $arSortRaw['VALUE'];
+		}
+		if( array_key_exists('VALUE_ENUM_ID', $arSortRaw) ) {
+			$arSort['VALUE_ENUM_ID'] = $arSortRaw['VALUE_ENUM_ID'];
+		}
+		$arFilterRaw = $arFilter;
+		$arFilter = array();
+		if( array_key_exists('ID', $arFilterRaw) ) {
+			$arFilter['PROPERTY_ID'] = $arFilterRaw['ID'];
+		}
+		if( array_key_exists('PROPERTY_ID', $arFilterRaw) ) {
+			$arFilter['PROPERTY_ID'] = $arFilterRaw['PROPERTY_ID'];
+		}
+		if( array_key_exists('CODE', $arFilterRaw) ) {
+			$arFilter['PROPERTY_CODE'] = $arFilterRaw['CODE'];
+		}
+		if( array_key_exists('NAME', $arFilterRaw) ) {
+			$arFilter['PROPERTY_NAME'] = $arFilterRaw['NAME'];
+		}
+		if( array_key_exists('PROPERTY_TYPE', $arFilterRaw) ) {
+			$arFilter['PROPERTY_TYPE'] = $arFilterRaw['PROPERTY_TYPE'];
+		}
+		if( array_key_exists('SORT', $arFilterRaw) ) {
+			$arFilter['PROPERTY_SORT'] = $arFilterRaw['SORT'];
+		}
+		if( array_key_exists('VALUE', $arFilterRaw) ) {
+			$arFilter['VALUE'] = $arFilterRaw['VALUE'];
+		}
+		if( array_key_exists('VALUE_ENUM_ID', $arFilterRaw) ) {
+			$arFilter['VALUE_ENUM_ID'] = $arFilterRaw['VALUE_ENUM_ID'];
+		}
+		$arSelect = array(
+			'PROPERTY_ID',
+			'PROPERTY_CODE',
+			'PROPERTY_NAME',
+			'PROPERTY_DESCRIPTION',
+			'PROPERTY_TYPE',
+			'PROPERTY_SORT',
+			'ORDER_ID',
+			'VALUE',
+			'VALUE_ENUM_ID',
+			'PROPERTY_ID',
 		);
-		// так как groupBy еще не работает временное решение
-		$arOrderPropertiesTemp = array();
-		foreach ($arOrderProperties as $arOrderProp) {
-			$arOrderPropertiesTemp[$arOrderProp['PROPERTY_ID']] = $arOrderProp;
-		}
-		$arOrderProperties = $arOrderPropertiesTemp;
+		$arPropertyValues = $this->_OrderPropertyValuesDBS->getListArray(
+			$arSort, $arFilter, null, null, $arSelect, true
+		);
 
-		foreach ($arProperties as $arProp) {
-			$arResult[] = array_merge($arProp, $arOrderProperties[$arProp['ID']]);
+		foreach ($arPropertyValues as &$arPropValue) {
+			$arResult[$arPropValue['PROPERTY_ID']] = array(
+				'ID' => $arPropValue['PROPERTY_ID'],
+				'PROPERTY_ID' => $arPropValue['PROPERTY_ID'],
+				'CODE' => $arPropValue['PROPERTY_CODE'],
+				'NAME' => $arPropValue['PROPERTY_NAME'],
+				'DESCRIPTION' => $arPropValue['PROPERTY_DESCRIPTION'],
+				'PROPERTY_TYPE' => $arPropValue['PROPERTY_TYPE'],
+				'SORT' => $arPropValue['PROPERTY_SORT'],
+				'ORDER_ID' => $arPropValue['ORDER_ID'],
+				'VALUE' => $arPropValue['VALUE'],
+				'VALUE_ENUM_ID' => $arPropValue['VALUE_ENUM_ID']
+			);
 		}
-
 		return $arResult;
 	}
 
@@ -436,17 +536,20 @@ class Order extends MessagePoolDecorator {
 	}
 
 	/**
-	* @return array
-	*/
-	public function getItems() {
-		$arItemsList = $this->_BasketItemDBS->getListArray(array('ID' => 'ASC'), array('ORDER_ID' => $this->_arOrder['ID']));
+	 * @param bool $bGetCached
+	 * @return array
+	 */
+	public function getItems($bGetCached = false) {
+		if(true !== $bGetCached || null === $this->_arItemsCache) {
+			$this->_arItemsCache = $this->_BasketItemDBS->getListArray(array('ID' => 'ASC'), array('ORDER_ID' => $this->_arOrder['ID']));
+		}
 		$this->_productCount = 0;
 		$this->_itemsCount = 0;
 		$this->_costValue = 0;
 		$this->_costTotalValue = 0;
 		$this->_discountValue = 0;
 		$this->_weightValue = 0;
-		foreach($arItemsList as &$arItem) {
+		foreach($this->_arItemsCache as &$arItem) {
 			$this->_productCount++;
 			$prodItemsCount = floatval($arItem['QUANTITY']);
 			$this->_itemsCount += floatval($prodItemsCount);
@@ -455,7 +558,7 @@ class Order extends MessagePoolDecorator {
 			$this->_discountValue += floatval($arItem['DISCOUNT_VALUE'])*$prodItemsCount;
 			$this->_weightValue += floatval($arItem['WEIGHT'])*$prodItemsCount;
 		}
-		return $arItemsList;
+		return $this->_arItemsCache;
 	}
 
 	/**
@@ -505,7 +608,7 @@ class Order extends MessagePoolDecorator {
 			}
 		}
 		unset($arExistsOrderItemsList);
-
+		$bSuccess = true;
 		foreach ($arItems as $keyItem => $arFields) {
 			if (isset($arFields['QUANTITY']) && $arFields['QUANTITY'] <= 0) {
 				if (array_key_exists($arFields['PRODUCT_ID'], $arExistsOrderItems)) {
@@ -580,10 +683,10 @@ class Order extends MessagePoolDecorator {
 		return $bSuccess;
 	}
 
-	public function getSummary($bFormatValues = false) {
+	public function getSummary($bFormatValues = false, $bGetCached = false) {
 		if($this->_productCount === null) {
 			// Получаем summary данные
-			$this->getItems();
+			$this->getItems($bGetCached);
 		}
 		if(true === $bFormatValues) {
 			return array(
@@ -608,12 +711,14 @@ class Order extends MessagePoolDecorator {
 		);
 	}
 
-	/**
-	*
-	*/
-	public function setProductListFromBasket() {
-		$arItems = $this->_Basket->getItemsList();
-		$arProducts = $this->_Basket->getProductsList();
-
+	public function callFinishEvent() {
+		$this->getItems(false);
+		$arEventList = GetModuleEvents(self::EVENT_MODULE, self::EVENT_FINISH, true);
+		$arParams = array(&$this);
+		$bSuccess = true;
+		foreach($arEventList as &$arEvent) {
+			$bSuccess = (ExecuteModuleEventEx($arEvent, $arParams)!==false) && $bSuccess;
+		}
+		return $bSuccess;
 	}
 }

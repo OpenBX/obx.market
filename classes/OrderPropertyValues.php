@@ -29,32 +29,34 @@ class OrderPropertyValuesDBS extends DBSimple
 	);
 	protected $_mainTable = 'OPV';
 	protected $_arTableFields = array(
-		'ID' => array('OPV' => 'ID'),
-		'ORDER_ID'			=> array('O'	=> 'ID'),
-		'ORDER_USER_ID'		=> array('O'	=> 'USER_ID'),
-		'PROPERTY_ID'		=> array('OP'	=> 'ID'),
-		'PROPERTY_CODE'		=> array('OP'	=> 'CODE'),
-		'PROPERTY_NAME'		=> array('OP'	=> 'NAME'),
-		'PROPERTY_TYPE'		=> array('OP'	=> 'PROPERTY_TYPE'),
-		'PROPERTY_IS_SYS'	=> array('OP'	=> 'IS_SYS'),
-		'PROPERTY_SORT'		=> array('OP'	=> 'SORT'),
-		'VALUE'				=> array('OP'	=> <<<SQL
-								(SELECT CASE OP.PROPERTY_TYPE
-									WHEN 'S' THEN OPV.VALUE_S
-									WHEN 'N' THEN OPV.VALUE_N
-									WHEN 'T' THEN OPV.VALUE_T
-									WHEN 'C' THEN OPV.VALUE_C
-									WHEN 'L' THEN (
-										SELECT VALUE FROM obx_order_property_enum as OPVE
-										WHERE
-											OPV.VALUE_L = OPVE.ID
-											AND
-											OPVE.PROPERTY_ID = OPV.PROPERTY_ID
+		'ID' => array('OPV' 	=> 'ID'),
+		'ORDER_ID'				=> array('O'	=> 'ID'),
+		'ORDER_USER_ID'			=> array('O'	=> 'USER_ID'),
+		'PROPERTY_ID'			=> array('OP'	=> 'ID'),
+		'PROPERTY_CODE'			=> array('OP'	=> 'CODE'),
+		'PROPERTY_NAME'			=> array('OP'	=> 'NAME'),
+		'PROPERTY_DESCRIPTION'	=> array('OP'	=> 'DESCRIPTION'),
+		'PROPERTY_TYPE'			=> array('OP'	=> 'PROPERTY_TYPE'),
+		'PROPERTY_IS_SYS'		=> array('OP'	=> 'IS_SYS'),
+		'PROPERTY_SORT'			=> array('OP'	=> 'SORT'),
+		'VALUE'					=> array('OP'	=> <<<SQL
+									(SELECT CASE OP.PROPERTY_TYPE
+										WHEN 'S' THEN OPV.VALUE_S
+										WHEN 'N' THEN OPV.VALUE_N
+										WHEN 'T' THEN OPV.VALUE_T
+										WHEN 'C' THEN OPV.VALUE_C
+										WHEN 'L' THEN (
+											SELECT VALUE FROM obx_order_property_enum as OPVE
+											WHERE
+												OPV.VALUE_L = OPVE.ID
+												AND
+												OPVE.PROPERTY_ID = OPV.PROPERTY_ID
+										)
+										ELSE NULL
+										END
 									)
-									ELSE NULL
-									END
-								)
 SQL
+								,'GET_LIST_FILTER' => true
 							),
 		'VALUE_S'			=> array('OPV'	=> 'VALUE_S'),
 		'VALUE_N'			=> array('OPV'	=> 'VALUE_N'),

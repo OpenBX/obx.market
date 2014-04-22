@@ -58,8 +58,19 @@ else {
 			return false;
 		}
 
+		$phone = preg_replace('~[^\d]~', '', $_REQUEST["PHONE"]);
+		$arProps = array(
+			"PHONE" => $phone
+		);
 		$arAddOrderErrors = array();
-		$NewOrder = Order::add(array("USER_ID" => $CurrentBasket->getFields("USER_ID")), $arAddOrderErrors);
+		$NewOrder = Order::makeOrder(
+			array(
+				"USER_ID" => $CurrentBasket->getFields("USER_ID"),
+				"PROPERTIES" => array("PHONE" => $phone)
+			),
+			$CurrentBasket,
+			$arAddOrderErrors
+		);
 		if ($NewOrder == null) {
 			$arJSON['success'] = "N";
 			foreach($arAddOrderErrors as $arAddOrderErrorItem) {
@@ -67,24 +78,13 @@ else {
 			}
 		}
 		else {
-			$phone = preg_replace('~[^\d]~', '', $_REQUEST["PHONE"]);
-
-			$arProps = array(
-				"PHONE" => $phone
-			);
-
-			$NewOrder->setProperties($arProps);
-			$newOrderID = $NewOrder->getID();
-
-			$OrderBasket = Basket::getByOrderID($newOrderID);
-			$OrderBasket->mergeBasket($CurrentBasket, true);
-			unset($CurrentBasket);
-
-			if ($OrderBasket->getLastError() == null) {
+			if( empty($arAddOrderErrors) ) {
 				$arJSON['success'] = "Y";
 			} else {
 				$arJSON['success'] = "N";
-				$arJSON['messages'][] = $OrderBasket->getLastError();
+				foreach($arAddOrderErrors as $arAddOrderErrorItem) {
+					$arJSON['messages'][] = $arAddOrderErrorItem['TEXT'];
+				}
 			}
 		}
 	}
