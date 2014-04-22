@@ -177,6 +177,14 @@ class Order extends MessagePoolDecorator {
 	}
 
 	static public function makeOrder($arFields = null, Basket $Basket = null, &$arErrors = array()) {
+		if( !($Basket instanceof Basket) ) {
+			$Basket = Basket::getCurrent();
+		}
+		if($Basket->isEmpty()) {
+			$arErrors[] = GetMessage('OBX_ORDER_CLASS_ERROR_4');
+			return null;
+		}
+
 		$arProperties = null;
 		if( array_key_exists('PROPERTIES', $arFields) ) {
 			$arProperties = $arFields['PROPERTIES'];
@@ -188,13 +196,12 @@ class Order extends MessagePoolDecorator {
 		if(null !== $arProperties) {
 			$Order->setProperties($arProperties);
 		}
-		if($Basket instanceof Basket) {
-			$OrderBasket = Basket::getByOrderID($Order->getID());
-			$OrderBasket->mergeBasket($Basket, true);
-			$arLastBasketError = $OrderBasket->getLastError('ARRAY');
-			if(null !== $arLastBasketError) {
-				$arErrors[] = $arLastBasketError;
-			}
+
+		$OrderBasket = Basket::getByOrderID($Order->getID());
+		$OrderBasket->mergeBasket($Basket, true);
+		$arLastBasketError = $OrderBasket->getLastError('ARRAY');
+		if(null !== $arLastBasketError) {
+			$arErrors[] = $arLastBasketError;
 		}
 		if( false === $Order->callFinishEvent() ) {
 			$arErrors[] = $Order->getLastError('ARRAY');
