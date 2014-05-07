@@ -188,7 +188,7 @@ if ($ID > 0) {
 	$arOrderItems = $Order->getItems();
 }
 if (array_key_exists('ID', $arOrder) && $arOrder['ID'] > 0) {
-	$ID = $arOrder['ID']; // на случай если это новый заказ
+	$ID = $arOrder['ID'];
 	$arOrderStatus = $Order->getStatus();
 	$arOrderPropertyValues = $Order->getProperties();
 

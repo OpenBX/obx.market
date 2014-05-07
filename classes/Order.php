@@ -341,6 +341,9 @@ class Order extends MessagePoolDecorator {
 		}
 		$arSortRaw = $arSort;
 		$arSort = array();
+		if( array_key_exists('ORDER_ID', $arSortRaw) ) {
+			$arSort['ORDER_ID'] = intval($arSortRaw['ORDER_ID']);
+		}
 		if( array_key_exists('ID', $arSortRaw) ) {
 			$arSort['PROPERTY_ID'] = $arSortRaw['ID'];
 		}
@@ -365,8 +368,14 @@ class Order extends MessagePoolDecorator {
 		if( array_key_exists('VALUE_ENUM_ID', $arSortRaw) ) {
 			$arSort['VALUE_ENUM_ID'] = $arSortRaw['VALUE_ENUM_ID'];
 		}
+		if(empty($arSort)) {
+			$arSort = array('PROPERTY_SORT' => 'ASC');
+		}
 		$arFilterRaw = $arFilter;
 		$arFilter = array();
+		if( array_key_exists('ORDER_ID', $arFilterRaw) ) {
+			$arFilter['ORDER_ID'] = intval($arFilterRaw['ORDER_ID']);
+		}
 		if( array_key_exists('ID', $arFilterRaw) ) {
 			$arFilter['PROPERTY_ID'] = $arFilterRaw['ID'];
 		}
@@ -471,6 +480,9 @@ class Order extends MessagePoolDecorator {
 				} else {
 					$bEvenOneUpdateSuccess = true;
 				}
+			}
+			else {
+				$this->_OrderPropertyValuesDBS->delete($arPropVal['ID']);
 			}
 		}
 		unset ($arPropVal);
