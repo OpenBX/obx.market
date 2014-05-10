@@ -1,12 +1,12 @@
 <?php
-/***********************************************
- ** @product OBX:Market Bitrix Module         **
- ** @authors                                  **
- **         Maksim S. Makarov aka pr0n1x      **
- ** @license Affero GPLv3                     **
- ** @mailto rootfavell@gmail.com              **
- ** @copyright 2013 DevTop                    **
- ***********************************************/
+/******************************************
+ ** @product OpenBX:Market Bitrix Module **
+ ** @authors                             **
+ **         Maksim S. Makarov            **
+ ** @license Affero GPLv3                **
+ ** @mailto rootfavell@gmail.com         **
+ ** @copyright 2013 DevTop               **
+ ******************************************/
 use OBX\Market\Currency;
 use OBX\Market\CurrencyDBS;
 use OBX\Market\CurrencyFormat;
@@ -24,10 +24,12 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_ad
 if (!CModule::IncludeModule('obx.market')) return;
 
 // Доступ
+$bCanView = $USER->CanDoOperation('obx_market_view_order');
+$bCanEdit = $USER->CanDoOperation('obx_market_edit_order');
 //if (!$USER->CanDoOperation('edit_orders'))
 //	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 //$isAdmin = $USER->CanDoOperation('edit_orders');
-if (!$USER->IsAdmin()) {
+if (!$bCanView) {
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 }
 
@@ -95,90 +97,95 @@ $arPriceTypes = PriceDBS::getInstance()->getListArray();
 
 if ($REQUEST_METHOD == "POST" // проверка метода вызова страницы
 	&& ($save != "" || $apply != "") // проверка нажатия кнопок "Сохранить" и "Применить"
-	//&& $POST_RIGHT == "W" // проверка наличия прав на запись для модуля
 	&& check_bitrix_sessid() // проверка идентификатора сессии
 ) {
-	$DB->StartTransaction();
-	$arItems = $_REQUEST['PRODUCTS'];
-	$arProps = $_REQUEST['PROPERTIES'];
-	$arFields = $_REQUEST['FIELDS'];
-	$statusID = null;
-	if( array_key_exists('STATUS_ID', $arFields) ) {
-		$statusID = intval($arFields['STATUS_ID']);
-	}
-
-	if ($ID > 0) {
-		$bSuccess = false;
-		if ($Order->setFields($arFields)) {
-			$bSuccess = true;
-
-			if (!empty($arItems)) {
-				$arFilteredItems = array();
-
-				foreach($arItems as $arItem){
-					if ($arItem['TO_DELETE'] !="Y"){
-						$arFilteredItems[] = $arItem;
-					}
-				}
-
-				$bSuccess = $Order->setItems($arFilteredItems,true);
-			}
-			if (!empty($arProps)) {
-				$bSuccess = $Order->setProperties($arProps) && $bSuccess;
-			}
-
-			if(null !== $statusID) {
-				$bSuccess = $Order->setStatus($statusID) && $bSuccess;
-			}
+	if( $bCanEdit ) {// проверка наличия прав на запись для модуля
+		$DB->StartTransaction();
+		$arItems = $_REQUEST['PRODUCTS'];
+		$arProps = $_REQUEST['PROPERTIES'];
+		$arFields = $_REQUEST['FIELDS'];
+		$statusID = null;
+		if( array_key_exists('STATUS_ID', $arFields) ) {
+			$statusID = intval($arFields['STATUS_ID']);
 		}
 
-	} else {
-		$newID = $OrderDBS->add($_REQUEST['FIELDS']);
-		$bSuccess = ($newID > 0) ? true : false;
+		if ($ID > 0) {
+			$bSuccess = false;
+			if ($Order->setFields($arFields)) {
+				$bSuccess = true;
+
+				if (!empty($arItems)) {
+					$arFilteredItems = array();
+
+					foreach($arItems as $arItem){
+						if ($arItem['TO_DELETE'] !="Y"){
+							$arFilteredItems[] = $arItem;
+						}
+					}
+
+					$bSuccess = $Order->setItems($arFilteredItems,true);
+				}
+				if (!empty($arProps)) {
+					$bSuccess = $Order->setProperties($arProps) && $bSuccess;
+				}
+
+				if(null !== $statusID) {
+					$bSuccess = $Order->setStatus($statusID) && $bSuccess;
+				}
+			}
+
+		} else {
+			$newID = $OrderDBS->add($_REQUEST['FIELDS']);
+			$bSuccess = ($newID > 0) ? true : false;
+			if ($bSuccess) {
+				$ID = $newID;
+				$Order = Order::getOrder($ID, $arError);
+				if (!empty($arItems)) {
+					$arFilteredItems = array();
+
+					foreach($arItems as $arItem){
+						if ($arItem['TO_DELETE'] !="Y"){
+							$arFilteredItems[] = $arItem;
+						}
+					}
+
+					$bSuccess = $Order->setItems($arFilteredItems,true);
+				}
+				if (!empty($arProps)) {
+					$bSuccess = $Order->setProperties($arProps) && $bSuccess;
+				}
+			}
+
+		}
+
 		if ($bSuccess) {
-			$ID = $newID;
-			$Order = Order::getOrder($ID, $arError);
-			if (!empty($arItems)) {
-				$arFilteredItems = array();
+			$arOrder = $Order->getByID($ID);
+		}
 
-				foreach($arItems as $arItem){
-					if ($arItem['TO_DELETE'] !="Y"){
-						$arFilteredItems[] = $arItem;
-					}
-				}
-
-				$bSuccess = $Order->setItems($arFilteredItems,true);
-			}
-			if (!empty($arProps)) {
-				$bSuccess = $Order->setProperties($arProps) && $bSuccess;
+		if ($bSuccess) {
+			$DB->Commit();
+		} else {
+			$DB->Rollback();
+			if($Order != null) {
+				$arOrderErrorsPool = $Order->getErrors();
+				foreach($arOrderErrorsPool as $arOrderError) {
+					$arErrors[] = $arOrderError['TEXT'];
+				} unset($arOrderErrorsPool, $arOrderError);
 			}
 		}
 
-	}
-
-	if ($bSuccess) {
-		$arOrder = $Order->getByID($ID);
-	}
-
-	if ($bSuccess) {
-		$DB->Commit();
-	} else {
-		$DB->Rollback();
-		if($Order != null) {
-			$arOrderErrorsPool = $Order->getErrors();
-			foreach($arOrderErrorsPool as $arOrderError) {
-				$arErrors[] = $arOrderError['TEXT'];
-			} unset($arOrderErrorsPool, $arOrderError);
+		if ($apply != '') {
+			// если была нажата кнопка 'Применить' - отправляем обратно на форму.
+			LocalRedirect('/bitrix/admin/obx_market_order_edit.php?ID=' . $ID . '&' . $TabControl->ActiveTabParam());
+		} elseif($bSuccess) {
+			// если была нажата кнопка 'Сохранить' - отправляем к списку элементов
+			// только в том случае если не было ошибок
+			LocalRedirect('/bitrix/admin/obx_market_orders.php');
 		}
 	}
-
-	if ($apply != '') {
-		// если была нажата кнопка 'Применить' - отправляем обратно на форму.
+	else {
+		$arErrors[] = GetMessage('OBX_MARKET_ORDER_EDIT_ERROR_EDIT_ROLE');
 		LocalRedirect('/bitrix/admin/obx_market_order_edit.php?ID=' . $ID . '&' . $TabControl->ActiveTabParam());
-	} elseif($bSuccess) {
-		// если была нажата кнопка 'Сохранить' - отправляем к списку элементов
-		// только в том случае если не было ошибок
-		LocalRedirect('/bitrix/admin/obx_market_orders.php');
 	}
 }
 

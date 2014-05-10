@@ -1,6 +1,6 @@
 <?php
 /***********************************************
- ** @product OBX:Market Bitrix Module         **
+ ** @product OpenBX:Market Bitrix Module      **
  ** @authors                                  **
  **         Maksim S. Makarov aka pr0n1x      **
  ** @license Affero GPLv3                     **

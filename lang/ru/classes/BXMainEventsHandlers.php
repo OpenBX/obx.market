@@ -23,8 +23,11 @@ $MESS["GLOB_MENU_OBX_MARKET_ITEM_6_TITLE"] = "Системы доставки";
 $MESS["GLOB_MENU_OBX_MARKET_ITEM_7_TEXT"] = "Статистика продаж";
 $MESS["GLOB_MENU_OBX_MARKET_ITEM_7_TITLE"] = "Статистика продаж";
 
-$MESS["GLOB_MENU_OBX_MARKET_ITEM_8_TEXT"] = "Настройки модуля";
-$MESS["GLOB_MENU_OBX_MARKET_ITEM_8_TITLE"] = "Настройки модуля Маркет-Старт";
+$MESS["GLOB_MENU_OBX_MARKET_ITEM_8_TEXT"] = "Цены и каталоги";
+$MESS["GLOB_MENU_OBX_MARKET_ITEM_8_TITLE"] = "Цены и каталоги модуля Маркет-Старт";
+
+$MESS["GLOB_MENU_OBX_MARKET_ITEM_9_TEXT"] = "Настройки модуля";
+$MESS["GLOB_MENU_OBX_MARKET_ITEM_9_TITLE"] = "Настройки модуля Маркет-Старт";
 
 
 

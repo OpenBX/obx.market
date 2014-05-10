@@ -1,4 +1,5 @@
 <?php
+$MESS['OBX_MARKET_ORDER_EDIT_ERROR_EDIT_ROLE'] = 'У вас нет прав на редактирование заказов';
 $MESS['OBX_MARKET_ORDER_EDIT_TAB'] = 'Поля заказа';
 $MESS['OBX_MARKET_ORDER_EDIT_TAB_TITLE'] = 'Редактирование заказа № #ID#';
 $MESS['OBX_MARKET_ORDER_EDIT_TAB_TITLE_NEW'] = 'Создание нового заказа';

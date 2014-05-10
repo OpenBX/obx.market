@@ -11,6 +11,9 @@
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 
 CModule::IncludeModule("obx.market");
+if (!$USER->CanDoOperation('obx_market_admin_module')) {
+	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+}
 
 $TabContentController = OBX\Market\Settings::getController("Currency");
 

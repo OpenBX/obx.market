@@ -129,7 +129,9 @@ abstract class Settings extends MessagePoolDecorator {
 
 	abstract public function showTabContent();
 
-	abstract public function showTabScripts();
+	public function showTabScripts() {
+
+	}
 
 	abstract public function saveTabData();
 }

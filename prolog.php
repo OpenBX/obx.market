@@ -1,9 +1,12 @@
 <?php
-/*****************************************
- ** @product Market-Start Bitrix Module **
- ** @vendor A68 Studio                  **
- ** @mailto info@a-68.ru                **
- *****************************************/
+/******************************************
+ ** @product OpenBX:Market Bitrix Module **
+ ** @authors                             **
+ **         Maksim S. Makarov            **
+ ** @license Affero GPLv3                **
+ ** @mailto rootfavell@gmail.com         **
+ ** @copyright 2013 DevTop               **
+ ******************************************/
 
 IncludeModuleLangFile(__FILE__);
 define("ADMIN_MODULE_NAME", "obx.market");

@@ -4,6 +4,12 @@ $MESS['OBX_MODULE_INSTALL_DESCRIPTION'] = 'Модуль реализует ба�
 $MESS['OBX_PARTNER_NAME'] = 'OpenBitrixSolutions';
 $MESS['OBX_PARTNER_URI'] = 'http://www.a-68.ru';
 
+$MESS['OBX_MARKET_ROLE_DENIED'] = 'Доступ запрещен';
+$MESS['OBX_MARKET_ROLE_ORDER_READ'] = 'Чтение заказов';
+$MESS['OBX_MARKET_ROLE_ORDER_EDIT'] = 'Изменение заказов';
+$MESS['OBX_MARKET_ROLE_ADMIN'] = 'Полный доступ';
+
+// INSTALL DATA
 $MESS['OBX_MARKET_INS_CURRRENCY_RUB'] = 'Рубли';
 $MESS['OBX_MARKET_INS_CURRRENCY_RUB_FORMAT'] = '# руб.';
 $MESS['OBX_MARKET_INS_CURRRENCY_USD'] = 'Доллары США';

@@ -1,16 +1,15 @@
 <?
-/***************************************
- ** @product OBX:Market Bitrix Module **
- ** @authors                          **
- **         Maksim S. Makarov         **
- **         Morozov P. Artem          **
- ** @license Affero GPLv3             **
- ** @mailto rootfavell@gmail.com      **
- ** @mailto tashiro@yandex.ru         **
- ***************************************/
+/******************************************
+ ** @product OpenBX:Market Bitrix Module **
+ ** @authors                             **
+ **         Maksim S. Makarov            **
+ ** @license Affero GPLv3                **
+ ** @mailto rootfavell@gmail.com         **
+ ** @copyright 2013 DevTop               **
+ ******************************************/
 
 $arModuleVersion = array(
-	"VERSION" => "1.0.9",
+	"VERSION" => "1.1.0",
 	"VERSION_DATE" => "2072-02-28",
 );
 return $arModuleVersion;

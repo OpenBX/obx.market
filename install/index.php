@@ -229,16 +229,50 @@ class obx_market extends CModule {
 	}
 
 
+	function GetModuleRightList()
+	{
+		$arr = array(
+			"reference_id" => array("D","R","E","W"),
+			"reference" => array(
+				"[D] ".GetMessage("OBX_MARKET_ROLE_DENIED"),
+				"[R] ".GetMessage("OBX_MARKET_ROLE_ORDER_READ"),
+				"[E] ".GetMessage("OBX_MARKET_ROLE_ORDER_EDIT"),
+				"[W] ".GetMessage("OBX_MARKET_ROLE_ADMIN"),
+			)
+		);
+		return $arr;
+	}
 	public function GetModuleTasks() {
 		return array(
-			"order_manage" => array(
-				"LETTER" => "O",
+			"access_denied" => array(
+				"LETTER" => "D",
+				"BINDING" => "module",
+				"OPERATIONS" => array(),
+			),
+			"order_view" => array(
+				"LETTER" => "L",
 				"BINDING" => "module",
 				"OPERATIONS" => array(
-					"view_order",
-					"edit_order",
+					"obx_market_view_order",
 				),
 			),
+			"order_edit" => array(
+				"LETTER" => "P",
+				"BINDING" => "module",
+				"OPERATIONS" => array(
+					"obx_market_view_order",
+					"obx_market_edit_order",
+				)
+			),
+			"module_admin" => array(
+				"LETTER" => "W",
+				"BINDING" => "module",
+				"OPERATIONS" => array(
+					"obx_market_view_order",
+					"obx_market_edit_order",
+					"obx_market_admin_module",
+				)
+			)
 		);
 	}
 	public function InstallTasks() {
@@ -561,10 +595,6 @@ class obx_market extends CModule {
 			$DB->Query('SET character_set_results=utf8');
 			$DB->Query('SET collation_connection = "utf8_unicode_ci"');
 		}
-	}
-
-	public function GetModuleRightList() {
-
 	}
 
 	public function registerModule() {

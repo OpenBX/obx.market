@@ -1,40 +1,116 @@
 <?php
-/*********************************************
- ** @product A68:Market-Start Bitrix Module **
- ** @vendor A68 Studio                      **
- ** @mailto info@a-68.ru                    **
- *********************************************/
+/******************************************
+ ** @product OpenBX:Market Bitrix Module **
+ ** @authors                             **
+ **         Maksim S. Makarov            **
+ ** @license Affero GPLv3                **
+ ** @mailto rootfavell@gmail.com         **
+ ** @copyright 2013 DevTop               **
+ ******************************************/
+
+use OBX\Core\Settings\Tab as SettingsTab;
+use OBX\Core\Settings\AdminPage as SettingsAdminPage;
 
 IncludeModuleLangFile(__FILE__);
 
+/** @global \CUser $USER */
 if(!$USER->IsAdmin())return;
 if(!CModule::IncludeModule("obx.market"))return;
 
-/**
- * Закладки
- */
-$arTabsList = array(
-	array(
-		"DIV" => "obx_market_settings_currency",
-		"TAB" => GetMessage("OBX_MARKET_SETTINGS_TAB_CURRENCY"),
-		"ICON" => "settings_currency",
-		"TITLE" => GetMessage("OBX_MARKET_SETTINGS_TITLE_CURRENCY"),
-		"CONTROLLER" => OBX\Market\Settings::getController("Currency")
-	),
-	array(
-		"DIV" => "obx_market_settings_price",
-		"TAB" => GEtMessage("OBX_MARKET_SETTINGS_TAB_PRICE"),
-		"ICON" => "settings_price",
-		"TITLE" => GEtMessage("OBX_MARKET_SETTINGS_TITLE_PRICE"),
-		"CONTROLLER" => OBX\Market\Settings::getController("Price")
-	),
-	array(
-		"DIV" => "obx_market_settings_catalog",
-		"TAB" => GEtMessage("OBX_MARKET_SETTINGS_TAB_CATALOG"),
-		"ICON" => "settings_catalog",
-		"TITLE" => GEtMessage("OBX_MARKET_SETTINGS_TITLE_CATALOG"),
-		"CONTROLLER" => OBX\Market\Settings::getController("Catalog")
-	),
+
+class Settings_Roles extends OBX\Core\Settings\ATab
+{
+	public function showTabContent()
+	{
+		//define all global vars
+		global $__GlobalKeys;
+		global $__GlobalKeysIterator;
+		$__GlobalKeys = array_keys($GLOBALS);
+		for($__GlobalKeysIterator=0;
+			$__GlobalKeysIterator<count($__GlobalKeys);
+			$__GlobalKeysIterator++
+		) {
+			if(
+				$__GlobalKeys[$__GlobalKeysIterator]!='GLOBALS'
+				&& $__GlobalKeys[$__GlobalKeysIterator]!='strTitle'
+				&& $__GlobalKeys[$__GlobalKeysIterator]!='filepath'
+				&& $__GlobalKeys[$__GlobalKeysIterator]!='__GlobalKeys'
+				&& $__GlobalKeys[$__GlobalKeysIterator]!='__GlobalKeysIterator'
+			) {
+				global ${$__GlobalKeys[$__GlobalKeysIterator]};
+			}
+		}
+		unset($GLOBALS['__GlobalKeys']);
+		unset($GLOBALS['__GlobalKeysIterator']);
+		$module_id = 'obx.market';
+		require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/admin/group_rights2.php');
+	}
+
+	public function saveTabData()
+	{
+
+		global $APPLICATION;
+		$module_id = 'obx.market';
+		/** @noinspection PhpDynamicAsStaticMethodCallInspection */
+		$md = \CModule::CreateModuleObject($module_id);
+
+		$GROUP_DEFAULT_TASK = (array_key_exists('GROUP_DEFAULT_TASK', $_REQUEST)
+			?$_REQUEST['GROUP_DEFAULT_TASK']
+			:\COption::GetOptionString($module_id, 'GROUP_DEFAULT_TASK')
+		);
+
+		$arGROUPS = array();
+		$arFilter = Array("ACTIVE"=>"Y");
+		if($md->SHOW_SUPER_ADMIN_GROUP_RIGHTS != "Y")
+			$arFilter["ADMIN"] = "N";
+		/** @noinspection PhpDynamicAsStaticMethodCallInspection */
+		$z = \CGroup::GetList($v1="sort", $v2="asc", $arFilter);
+		while($zr = $z->Fetch())
+		{
+			$ar = array();
+			$ar["ID"] = intval($zr["ID"]);
+			$ar["NAME"] = htmlspecialcharsbx($zr["NAME"]);
+			$arGROUPS[] = $ar;
+		}
+
+		\COption::SetOptionString($module_id, "GROUP_DEFAULT_TASK", $GROUP_DEFAULT_TASK, "Task for groups by default");
+		/** @noinspection PhpDynamicAsStaticMethodCallInspection */
+		$letter = ($l = \CTask::GetLetter($GROUP_DEFAULT_TASK)) ? $l : 'D';
+		\COption::SetOptionString($module_id, "GROUP_DEFAULT_RIGHT", $letter, "Right for groups by default");
+
+		$arTasksInModule = Array();
+		foreach($arGROUPS as $value)
+		{
+			$tid = $GLOBALS["TASKS_".$value["ID"]];
+			if ($tid) {
+				$arTasksInModule[$value["ID"]] = Array('ID'=>$tid);
+			}
+
+			/** @noinspection PhpDynamicAsStaticMethodCallInspection */
+			$rt = ($tid) ? \CTask::GetLetter($tid) : '';
+			if (strlen($rt) > 0 && $rt != "NOT_REF") {
+				$APPLICATION->SetGroupRight($module_id, $value["ID"], $rt);
+			}
+			else {
+				$APPLICATION->DelGroupRight($module_id, array($value["ID"]));
+			}
+		}
+		/** @noinspection PhpDynamicAsStaticMethodCallInspection */
+		\CGroup::SetTasksForModule($module_id, $arTasksInModule);
+
+		return true;
+	}
+
+	public function showTabScripts()
+	{
+
+	}
+}
+
+$ModuleSettings = new SettingsAdminPage('obx_market_settings');
+//$AdminPage->addTab(new SettingsTab(
+//	'obx.market',
+//	'main',
 //	array(
 //		"DIV" => "obx_market_settings_main",
 //		"TAB" => GetMessage("MAIN_TAB_SET"),
@@ -42,50 +118,23 @@ $arTabsList = array(
 //		"TITLE" => GetMessage("MAIN_TAB_TITLE_SET")
 //	),
 //	array(
-//		"DIV" => "obx_market_settings_access",
-//		"TAB" => GEtMessage("OBX_MARKET_SETTINGS_TAB_ACCESS"),
-//		"ICON" => "settings_access",
-//		"TITLE" => GEtMessage("OBX_MARKET_SETTINGS_TITLE_ACCESS"),
+//
 //	)
+//);
+$ModuleSettings->addTab(new Settings_Roles(array(
+	"DIV" => "obx_market_settings_access",
+	"TAB" => GEtMessage("OBX_MARKET_SETTINGS_TAB_ACCESS"),
+	"ICON" => "settings_access",
+	"TITLE" => GEtMessage("OBX_MARKET_SETTINGS_TITLE_ACCESS"),
+)));
 
-);
-$TabControl = new CAdminTabControl("tabSettings", $arTabsList);
-
-
-/**
- * Шаблоны
- */
-
-$APPLICATION->AddHeadScript("/bitrix/js/obx.market/jquery-1.9.1.min.js");
-$APPLICATION->AddHeadScript("/bitrix/js/obx.market/tools.js");
-$APPLICATION->AddHeadScript("/bitrix/js/obx.market/settings.js");
-$APPLICATION->AddHeadScript("/bitrix/js/obx.market/jquery-cookie.js");
-
+if($ModuleSettings->checkSaveRequest()) {
+	$ModuleSettings->save();
+}
+if($ModuleSettings->checkRestoreRequest()) {
+	$ModuleSettings->restoreDefaults();
+}
 ?>
 <div id="obx_market_settings">
-<form method="post" action="<?echo $APPLICATION->GetCurPage()?>?mid=<?=urlencode($mid)?>&amp;lang=<?echo LANGUAGE_ID?>">
-
-<?
-$TabControl->Begin();
-foreach($arTabsList as &$arTab) {
-	$TabControl->BeginNextTab();
-	if( !empty($arTab["CONTROLLER"]) ) {
-		$arTab["CONTROLLER"]->saveTabData();
-		$arTab["CONTROLLER"]->showMessages();
-		$arTab["CONTROLLER"]->showErrors();
-		$arTab["CONTROLLER"]->showTabContent();
-	}
-}
-$TabControl->End();
-?>
-</form>
+	<?$ModuleSettings->show()?>
 </div>
-<?
-foreach($arTabsList as &$arTab) {
-	if( !empty($arTab["CONTROLLER"]) ) {
-		?><div id="<?=$arTab["DIV"]."_scripts"?>"><?
-		$arTab["CONTROLLER"]->showTabScripts();
-		?></div><?
-	}
-}
-?>

@@ -1,12 +1,12 @@
 <?php
-/***********************************************
- ** @product OBX:Market Bitrix Module         **
- ** @authors                                  **
- **         Maksim S. Makarov aka pr0n1x      **
- ** @license Affero GPLv3                     **
- ** @mailto rootfavell@gmail.com              **
- ** @copyright 2013 DevTop                    **
- ***********************************************/
+/******************************************
+ ** @product OpenBX:Market Bitrix Module **
+ ** @authors                             **
+ **         Maksim S. Makarov            **
+ ** @license Affero GPLv3                **
+ ** @mailto rootfavell@gmail.com         **
+ ** @copyright 2013 DevTop               **
+ ******************************************/
 
 use OBX\Core\Tools;
 use OBX\Market\CurrencyFormatDBS;
@@ -32,10 +32,10 @@ if(!CModule::IncludeModule('obx.market')) return;
  */
 $APPLICATION->AddHeadString('<meta http-equiv="X-UA-Compatible" content="IE=edge">');
 // Доступ
-//if (!$USER->CanDoOperation('edit_orders'))
-//	$APPLICATION->AuthForm(GetMessage('ACCESS_DENIED'));
-//$isAdmin = $USER->CanDoOperation('edit_orders');
-if (!$USER->IsAdmin()) {
+
+$bCanView = $USER->CanDoOperation('obx_market_view_order');
+$bCanEdit = $USER->CanDoOperation('obx_market_edit_order');
+if (!$bCanView) {
 	$APPLICATION->AuthForm(GetMessage('ACCESS_DENIED'));
 }
 
@@ -142,7 +142,7 @@ if(!defined('___CheckFilter_DEFINED')) {
 /**
  * Обработка
  */
-if($lAdmin->EditAction()){
+if($bCanEdit && $lAdmin->EditAction()){
 	foreach($FIELDS as $ID => &$arFields) {
 		$ID = IntVal($ID);
 		if($ID <= 0) {
@@ -220,7 +220,7 @@ if($lAdmin->EditAction()){
 		$DB->Commit();
 	}
 }
-if( ($arID = $lAdmin->GroupAction()) ) {
+if( $bCanEdit && ($arID = $lAdmin->GroupAction()) ) {
 	if(false && $_REQUEST['action_target']=='selected'){
 		$rsData = $OrderDBS->getList(array($by=>$objOrder), $arFilter);
 		while($arRes = $rsData->Fetch())
@@ -467,33 +467,35 @@ while( $arRes = $rsData->NavNext(true, 'f_') ) {
 	}
 
 
-	// Меню строки
-	$arActions = Array();
-	$arActions[] = array(
-		'ICON' => 'edit',
-		'TEXT' => GetMessage('OBX_ORDER_LIST_EDIT'),
-		'ACTION' => $lAdmin->ActionRedirect('obx_market_order_edit.php?ID='.$f_ID),
-		'DEFAULT' => 'Y',
-	);
-	$arActions[] = array(
-		'SEPARATOR'=>true,
-	);
-	foreach($arOrderStatusList as &$arStatus) {
+	// Меню строки (если есть права на редактирование)
+	if($bCanEdit) {
+		$arActions = Array();
 		$arActions[] = array(
-			'GLOBAL_ICON' => 'obx-market-status status-id-'.$arStatus['ID'],
-			'TEXT' => GetMessage('OBX_MARKET_ORDERS_F_STATUS').': ['.$arStatus['ID'].']&nbsp;'.$arStatus["NAME"],
-			'ACTION' => $lAdmin->ActionDoGroup($f_ID, 'setstatus_'.$arStatus['ID'])
+			'ICON' => 'edit',
+			'TEXT' => GetMessage('OBX_ORDER_LIST_EDIT'),
+			'ACTION' => $lAdmin->ActionRedirect('obx_market_order_edit.php?ID='.$f_ID),
+			'DEFAULT' => 'Y',
 		);
+		$arActions[] = array(
+			'SEPARATOR'=>true,
+		);
+		foreach($arOrderStatusList as &$arStatus) {
+			$arActions[] = array(
+				'GLOBAL_ICON' => 'obx-market-status status-id-'.$arStatus['ID'],
+				'TEXT' => GetMessage('OBX_MARKET_ORDERS_F_STATUS').': ['.$arStatus['ID'].']&nbsp;'.$arStatus["NAME"],
+				'ACTION' => $lAdmin->ActionDoGroup($f_ID, 'setstatus_'.$arStatus['ID'])
+			);
+		}
+		$arActions[] = array(
+			'SEPARATOR'=>true,
+		);
+		$arActions[] = array(
+			'ICON'=>'delete',
+			'TEXT'=>GetMessage('OBX_ORDER_LIST_DEL'),
+			'ACTION'=>'if(confirm(\''.GetMessage('OBX_ORDER_LIST_DEL_CONF').'\')) '.$lAdmin->ActionDoGroup($f_ID, 'delete'),
+		);
+		$row->AddActions($arActions);
 	}
-	$arActions[] = array(
-		'SEPARATOR'=>true,
-	);
-	$arActions[] = array(
-		'ICON'=>'delete',
-		'TEXT'=>GetMessage('OBX_ORDER_LIST_DEL'),
-		'ACTION'=>'if(confirm(\''.GetMessage('OBX_ORDER_LIST_DEL_CONF').'\')) '.$lAdmin->ActionDoGroup($f_ID, 'delete'),
-	);
-	$row->AddActions($arActions);
 }
 
 // Футтер
@@ -503,21 +505,26 @@ $lAdmin->AddFooter(
 		array('counter'=>true, 'title'=>GetMessage('MAIN_ADMIN_LIST_CHECKED'), 'value'=>'0'),
 	)
 );
-// Груповые операции
-$lAdmin->AddGroupActionTable(array(
-	'delete' => GetMessage('MAIN_ADMIN_LIST_DELETE'),
-));
 
-// Главное меню
-$aContext = array(
-	array(
-		'TEXT'=>GetMessage('OBX_MARKET_ORDERS_LIST_ADD'),
-		'LINK'=>'obx_market_order_edit.php?lang='.LANG,
-		'TITLE'=>GetMessage('OBX_MARKET_ORDERS_LIST_ADD_TITLE'),
-		'ICON'=>'btn_new',
-	),
-);
-$lAdmin->AddAdminContextMenu($aContext);
+
+
+if($bCanEdit) {
+	// Груповые операции
+	$lAdmin->AddGroupActionTable(array(
+		'delete' => GetMessage('MAIN_ADMIN_LIST_DELETE'),
+	));
+	// Главное меню
+	$aContext = array(
+		array(
+			'TEXT'=>GetMessage('OBX_MARKET_ORDERS_LIST_ADD'),
+			'LINK'=>'obx_market_order_edit.php?lang='.LANG,
+			'TITLE'=>GetMessage('OBX_MARKET_ORDERS_LIST_ADD_TITLE'),
+			'ICON'=>'btn_new',
+		),
+	);
+	$lAdmin->AddAdminContextMenu($aContext);
+}
+
 $lAdmin->CheckListMode();
 
 

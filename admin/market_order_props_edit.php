@@ -1,12 +1,12 @@
 <?php
-/***********************************************
- ** @product OBX:Market Bitrix Module         **
- ** @authors                                  **
- **         Maksim S. Makarov aka pr0n1x      **
- ** @license Affero GPLv3                     **
- ** @mailto rootfavell@gmail.com              **
- ** @copyright 2013 DevTop                    **
- ***********************************************/
+/******************************************
+ ** @product OpenBX:Market Bitrix Module **
+ ** @authors                             **
+ **         Maksim S. Makarov            **
+ ** @license Affero GPLv3                **
+ ** @mailto rootfavell@gmail.com         **
+ ** @copyright 2013 DevTop               **
+ ******************************************/
 
 use OBX\Market\OrderPropertyDBS;
 use OBX\Market\OrderPropertyValuesDBS;
@@ -17,10 +17,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admi
 if(!CModule::IncludeModule('obx.market')) return;
 
 // Доступ
-//if (!$USER->CanDoOperation('edit_orders'))
-//	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
-//$isAdmin = $USER->CanDoOperation('edit_orders');
-if (!$USER->IsAdmin()) {
+if (!$USER->CanDoOperation('obx_market_admin_module')) {
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 }
 
