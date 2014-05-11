@@ -35,6 +35,7 @@ OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/obx_market_orders.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/obx_market_pay_systems.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/obx_market_places.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/", true, true);
+OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/obx_market_prices.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/obx_market_product_search.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/obx_market_statistics.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/ajax/obx_market_settings_catalog.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/ajax/", true, true);

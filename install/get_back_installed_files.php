@@ -35,6 +35,7 @@ DeleteDirFilesEx("/bitrix/modules/obx.market/install/admin/obx_market_order_stat
 DeleteDirFilesEx("/bitrix/modules/obx.market/install/admin/obx_market_orders.php");
 DeleteDirFilesEx("/bitrix/modules/obx.market/install/admin/obx_market_pay_systems.php");
 DeleteDirFilesEx("/bitrix/modules/obx.market/install/admin/obx_market_places.php");
+DeleteDirFilesEx("/bitrix/modules/obx.market/install/admin/obx_market_prices.php");
 DeleteDirFilesEx("/bitrix/modules/obx.market/install/admin/obx_market_product_search.php");
 DeleteDirFilesEx("/bitrix/modules/obx.market/install/admin/obx_market_statistics.php");
 DeleteDirFilesEx("/bitrix/modules/obx.market/install/admin/ajax/obx_market_settings_catalog.php");
@@ -59,6 +60,7 @@ OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/obx_market_order_sta
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/obx_market_orders.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/obx_market_pay_systems.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/obx_market_places.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/", true, true);
+OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/obx_market_prices.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/obx_market_product_search.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/", true, true);
 OBX_CopyDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/admin/obx_market_statistics.php", $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/", true, true);
 if( ! is_dir($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/install/admin/ajax") ) {

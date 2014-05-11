@@ -1,4 +1,4 @@
-<?
+<?php
 /******************************************
  ** @product OpenBX:Market Bitrix Module **
  ** @authors                             **
@@ -6,4 +6,4 @@
  ** @license Affero GPLv3                **
  ** @mailto rootfavell@gmail.com         **
  ******************************************/
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/admin/market_pay_systems.php");?>
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/obx.market/admin/market_prices.php");?>

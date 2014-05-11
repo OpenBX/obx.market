@@ -17,6 +17,7 @@ DeleteDirFilesEx("/bitrix/admin/obx_market_order_status_edit.php");
 DeleteDirFilesEx("/bitrix/admin/obx_market_orders.php");
 DeleteDirFilesEx("/bitrix/admin/obx_market_pay_systems.php");
 DeleteDirFilesEx("/bitrix/admin/obx_market_places.php");
+DeleteDirFilesEx("/bitrix/admin/obx_market_prices.php");
 DeleteDirFilesEx("/bitrix/admin/obx_market_product_search.php");
 DeleteDirFilesEx("/bitrix/admin/obx_market_statistics.php");
 DeleteDirFilesEx("/bitrix/admin/ajax/obx_market_settings_catalog.php");
