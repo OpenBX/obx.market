@@ -232,11 +232,11 @@ class obx_market extends CModule {
 	function GetModuleRightList()
 	{
 		$arr = array(
-			"reference_id" => array("D","R","E","W"),
+			"reference_id" => array("D","L","P","W"),
 			"reference" => array(
 				"[D] ".GetMessage("OBX_MARKET_ROLE_DENIED"),
-				"[R] ".GetMessage("OBX_MARKET_ROLE_ORDER_READ"),
-				"[E] ".GetMessage("OBX_MARKET_ROLE_ORDER_EDIT"),
+				"[L] ".GetMessage("OBX_MARKET_ROLE_ORDER_READ"),
+				"[P] ".GetMessage("OBX_MARKET_ROLE_ORDER_EDIT"),
 				"[W] ".GetMessage("OBX_MARKET_ROLE_ADMIN"),
 			)
 		);
