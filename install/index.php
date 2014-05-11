@@ -278,6 +278,13 @@ class obx_market extends CModule {
 	public function InstallTasks() {
 		$this->bSuccessInstallTasks = true;
 		parent::InstallTasks();
+		$this->bSuccessInstallTasks = (
+			(require_once $_SERVER['DOCUMENT_ROOT']
+				.BX_ROOT.'/modules/'
+				.$this->MODULE_ID
+				.'/install/install_tasks.php'
+			)!==false
+		)?true:false;
 		return $this->bSuccessInstallTasks;
 	}
 	public function UnInstallTasks() {

@@ -14,14 +14,43 @@ use OBX\Core\Settings\AdminPage as SettingsAdminPage;
 IncludeModuleLangFile(__FILE__);
 
 /** @global \CUser $USER */
-if(!$USER->IsAdmin())return;
-if(!CModule::IncludeModule("obx.market"))return;
+if(!$USER->IsAdmin()) return;
+if(!CModule::IncludeModule("obx.market")) return;
 
 
 class Settings_Roles extends OBX\Core\Settings\ATab
 {
+	const MODULE_ID = 'obx.market';
+
 	public function showTabContent()
 	{
+		/** @noinspection PhpDynamicAsStaticMethodCallInspection */
+		$arTasks = \CTask::GetTasksInModules(false, self::MODULE_ID);
+		if(empty($arTasks)) {
+			$this->showInstallRolesForm();
+		}
+		else {
+			$this->showGroupRoleSettings();
+		}
+	}
+
+	protected function showInstallRolesForm() {
+		?>
+		<tr>
+			<td width="40%">
+				<b><?= GetMessage('OBX_MARKET_INSTALL_ROLES_TITLE') ?></b>
+				<br />
+				<small><?=GetMessage('OBX_MARKET_INSTALL_ROLES_DESCRIPTION')?></small>
+			</td>
+			<td width="60%">
+				<input type="checkbox" id="obx_market_install_roles" name="obx_market_install_roles" value="Y"/>
+				<label for="obx_market_install_roles"></label>
+			</td>
+		</tr>
+		<?
+	}
+
+	protected function showGroupRoleSettings() {
 		//define all global vars
 		global $__GlobalKeys;
 		global $__GlobalKeysIterator;
@@ -42,13 +71,30 @@ class Settings_Roles extends OBX\Core\Settings\ATab
 		}
 		unset($GLOBALS['__GlobalKeys']);
 		unset($GLOBALS['__GlobalKeysIterator']);
-		$module_id = 'obx.market';
+		// Это не даст скрипту обработать сохранение. Ибо есть свой обработчик
+		unset($Update, $Apply);
+		$module_id = self::MODULE_ID;
 		require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/admin/group_rights2.php');
 	}
 
 	public function saveTabData()
 	{
+		if(array_key_exists('obx_market_install_roles', $_REQUEST) && $_REQUEST['obx_market_install_roles']) {
+			$this->installRoles();
+		}
+		else {
+			$this->saveRoles();
+		}
+	}
 
+	protected function installRoles() {
+		/** @noinspection PhpDynamicAsStaticMethodCallInspection */
+		$module = \CModule::CreateModuleObject(self::MODULE_ID);
+		$module->InstallTasks();
+		$this->addNotice(GetMessage('OBX_MARKET_ROLES_INSTALLED'));
+	}
+
+	protected function saveRoles() {
 		global $APPLICATION;
 		$module_id = 'obx.market';
 		/** @noinspection PhpDynamicAsStaticMethodCallInspection */
