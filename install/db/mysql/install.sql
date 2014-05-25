@@ -101,8 +101,8 @@ create table if not exists obx_ecom_ibe (
 -- Таблица заказов
 create table if not exists obx_orders (
 	ID int(11) not null auto_increment,
-	TIMESTAMP_X timestamp on update current_timestamp not null default current_timestamp,
-	DATE_CREATED timestamp not null,
+	TIMESTAMP_X datetime not null,
+	DATE_CREATED datetime not null,
 	USER_ID int(11) NULL,
 	MODIFIED_BY int(11) not null default 0,
 	MANAGER_ID int(11) NULL,
@@ -126,8 +126,8 @@ create table if not exists obx_basket (
 	ORDER_ID int(11) NULL,
 	HASH_STRING char(32) NULL,
 	CURRENCY char(3) not null,
-	TIMESTAMP_X timestamp on update current_timestamp not null default current_timestamp,
-	DATE_CREATED timestamp not null,
+	TIMESTAMP_X datetime not null,
+	DATE_CREATED datetime not null,
 	primary key (ID),
 	index obx_basket_hash(HASH_STRING),
 	index obx_basket_user(USER_ID),
@@ -229,8 +229,8 @@ create table if not exists obx_order_property_values (
 -- Таблица комментраиев заказа
 create table if not exists obx_order_comments (
 	ID int(11) not null auto_increment,
-	TIMESTAMP_X timestamp on update current_timestamp not null default current_timestamp,
-	DATE_CREATED timestamp not null,
+	TIMESTAMP_X datetime not null,
+	DATE_CREATED datetime not null,
 	ORDER_ID int(11) not null,
 	USER_ID int(11) not null,
 	REPLY_ID int(11) NULL,

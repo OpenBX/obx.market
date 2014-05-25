@@ -31,7 +31,7 @@ if(!CModule::IncludeModule('obx.market')) return;
  * @global \CUser $USER
  */
 $APPLICATION->AddHeadString('<meta http-equiv="X-UA-Compatible" content="IE=edge">');
-// Доступ
+// пїЅпїЅпїЅпїЅпїЅпїЅ
 
 $bCanView = $USER->CanDoOperation('obx_market_view_order');
 $bCanEdit = $USER->CanDoOperation('obx_market_edit_order');
@@ -141,7 +141,11 @@ if(!defined('___CheckFilter_DEFINED')) {
 
 /**
  * Обработка
+ * @var array $FIELDS
+ * @var array $FIELDS_OLD
+ * @var array $PROPERTIES
  */
+
 if($bCanEdit && $lAdmin->EditAction()){
 	foreach($FIELDS as $ID => &$arFields) {
 		$ID = IntVal($ID);
@@ -221,16 +225,16 @@ if($bCanEdit && $lAdmin->EditAction()){
 	}
 }
 if( $bCanEdit && ($arID = $lAdmin->GroupAction()) ) {
-	if(false && $_REQUEST['action_target']=='selected'){
-		$rsData = $OrderDBS->getList(array($by=>$objOrder), $arFilter);
-		while($arRes = $rsData->Fetch())
+	if($_REQUEST['action_target']=='selected'){
+		$rsData = $OrderDBS->getList(array('ID' => 'ASC'));
+		while($arRes = $rsData->Fetch()) {
 			$arID[] = $arRes['ID'];
+		}
 	}
 
 	foreach($arID as $ID){
 		$ID = IntVal($ID);
-		if($ID <= 0)
-			continue;
+		if($ID <= 0) continue;
 		switch($_REQUEST['action'])
 		{
 			case 'delete':

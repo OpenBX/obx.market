@@ -97,7 +97,9 @@ SQLCHUNK
 			'ORDER_ID' => self::FLD_T_INT | self::FLD_NOT_NULL | self::FLD_NOT_ZERO | self::FLD_CUSTOM_CK,
 			'USER_ID' => self::FLD_T_USER_ID | self::FLD_NOT_NULL | self::FLD_NOT_ZERO,
 			'HASH_STRING' => self::FLD_T_IDENT | self::FLD_CUSTOM_CK,
-			'CURRENCY' => self::FLD_T_NO_CHECK | self::FLD_CUSTOM_CK | self::FLD_REQUIRED | self::FLD_BRK_INCORR
+			'CURRENCY' => self::FLD_T_NO_CHECK | self::FLD_CUSTOM_CK | self::FLD_REQUIRED | self::FLD_BRK_INCORR,
+			'DATE_CREATED' => self::FLD_T_NO_CHECK,
+			'TIMESTAMP_X' => self::FLD_T_NO_CHECK
 		);
 		$this->_getEntityEvents();
 	}
@@ -139,16 +141,20 @@ SQLCHUNK
 	}
 
 	protected function _onStartAdd(&$arFields) {
-		$curTime = date('Y-m-d H:i:s');
+		$curTime = ConvertTimeStamp(false, 'FULL');
 		$arFields['DATE_CREATED'] = $curTime;
-		return true;
+		$arFields['TIMESTAMP_X'] = $curTime;
+		return parent::_onStartAdd($arFields);
 	}
 
 	protected function _onStartUpdate(&$arFields) {
 		if (array_key_exists('DATE_CREATED', $arFields)) {
 			unset($arFields['DATE_CREATED']);
 		}
-		return true;
+		if(!empty($arFields)) {
+			$arFields['TIMESTAMP_X'] = ConvertTimeStamp(false, 'FULL');
+		}
+		return parent::_onStartUpdate($arFields);
 	}
 
 	protected function _onBeforeAdd(&$arFields, &$arCheckData) {
@@ -179,7 +185,7 @@ SQLCHUNK
 				return false;
 			}
 		}
-		return true;
+		return parent::_onBeforeAdd($arFields, $arCheckData);
 	}
 
 	protected function _onBeforeUpdate(&$arFields, &$arCheckData) {
@@ -198,11 +204,11 @@ SQLCHUNK
 				else {
 					$this->addError(GetMessage('OBX_BASKET_LIST_ERROR_5'), 5);
 				}
-				return false;
+				return parent::_onBeforeUpdate($arFields, $arCheckData);
 			}
 			$arFields['HASH_STRING'] = null;
 			$arFields['USER_ID'] = null;
-			return true;
+			return parent::_onBeforeUpdate($arFields, $arCheckData);
 		}
 		if( array_key_exists('USER_ID', $arFields) ) {
 			$rsExistsBasket = $this->getList(null, array('USER_ID' => $arFields['USER_ID'], '!ID' => $arFields['ID']));
@@ -212,7 +218,7 @@ SQLCHUNK
 			}
 			$arFields['HASH_STRING'] = null;
 			$arFields['ORDER_ID'] = null;
-			return true;
+			return parent::_onBeforeUpdate($arFields, $arCheckData);
 		}
 		return true;
 	}

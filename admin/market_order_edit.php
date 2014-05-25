@@ -23,7 +23,7 @@ use OBX\Market\PriceDBS;
 require_once($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin_before.php');
 if (!CModule::IncludeModule('obx.market')) return;
 
-// Доступ
+// пїЅпїЅпїЅпїЅпїЅпїЅ
 $bCanView = $USER->CanDoOperation('obx_market_view_order');
 $bCanEdit = $USER->CanDoOperation('obx_market_edit_order');
 //if (!$USER->CanDoOperation('edit_orders'))
@@ -76,8 +76,10 @@ if (!isset($_SESSION['_OBX_ORDER_EDIT_ERRORS'])) {
 	$_SESSION['_OBX_ORDER_EDIT_ERRORS'] = array();
 }
 $arErrors = & $_SESSION['_OBX_ORDER_EDIT_ERRORS'];
-
-$Order = Order::getOrder($ID, $arError);
+$Order = null;
+if($ID > 0) {
+	$Order = Order::getOrder($ID, $arGetOrderErrors);
+}
 
 if (!empty($arError)) {
 	$arErrors[] = $arError;
@@ -109,7 +111,7 @@ if ($REQUEST_METHOD == "POST" // проверка метода вызова ст
 			$statusID = intval($arFields['STATUS_ID']);
 		}
 
-		if ($ID > 0) {
+		if (null !== $Order) {
 			$bSuccess = false;
 			if ($Order->setFields($arFields)) {
 				$bSuccess = true;
@@ -189,7 +191,7 @@ if ($REQUEST_METHOD == "POST" // проверка метода вызова ст
 	}
 }
 
-if ($ID > 0) {
+if (null !== $Order) {
 	$arOrder = $Order->getFields();
 	$arSummary = $Order->getSummary(true);
 	$arOrderItems = $Order->getItems();

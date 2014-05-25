@@ -487,7 +487,7 @@ class Order extends MessagePoolDecorator {
 		}
 		unset ($arPropVal);
 		if ($bEvenOneUpdateSuccess) {
-			$curTime = date('Y-m-d H:i:s');
+			$curTime = ConvertTimeStamp(false, 'FULL');;
 			$this->_OrderDBS->update(array('ID' => $this->_arOrder['ID'], 'TIMESTAMP_X' => $curTime));
 		}
 		return $bSetPropValuesSuccess;

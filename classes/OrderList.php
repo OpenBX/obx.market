@@ -274,7 +274,7 @@ SQL
 	}
 
 	protected function _onStartAdd(&$arFields) {
-		$curTime = date('Y-m-d H:i:s');
+		$curTime = ConvertTimeStamp(false, 'FULL');
 		$arFields['DATE_CREATED'] = $curTime;
 		$bSuccess = parent::_onStartAdd($arFields);
 		return $bSuccess;
@@ -292,6 +292,9 @@ SQL
 	protected function _onStartUpdate(&$arFields) {
 		if (array_key_exists('DATE_CREATED', $arFields)) {
 			unset($arFields['DATE_CREATED']);
+		}
+		if(!empty($arFields)) {
+			$arFields['TIMESTAMP_X'] = ConvertTimeStamp(false, 'FULL');
 		}
 		$bSuccess = parent::_onStartUpdate($arFields);
 		return $bSuccess;
