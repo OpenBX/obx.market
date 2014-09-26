@@ -12,7 +12,7 @@ namespace OBX\Market;
 
 use OBX\Core\Tools;
 use OBX\Core\MessagePoolDecorator;
-use OBX\Core\DBSResult;
+use OBX\Core\DBSimple\Result as DBSResult;
 
 IncludeModuleLangFile(__FILE__);
 
@@ -258,7 +258,7 @@ class Basket extends MessagePoolDecorator
 	public function __construct(DBSResult $rsBasket) {
 		if($rsBasket != null && $rsBasket->SelectedRowsCount() > 0) {
 			$abstractionName = get_class(self::$_BasketDBS);
-			if($rsBasket->getAbstractionName() != $abstractionName) {
+			if($rsBasket->getDBSimpleEntity() !== self::$_BasketDBS) {
 				$this->addError('Error: Basket must be constructed from the result of '.$abstractionName.'::getList()');
 				return;
 			}

@@ -8,6 +8,16 @@
  ** @copyright 2013 DevTop                    **
  ***********************************************/
 
+define("BX_SKIP_SESSION_EXPAND", true);
+//define("PUBLIC_AJAX_MODE", true);
+define("NO_KEEP_STATISTIC", "Y");
+define("NO_AGENT_STATISTIC","Y");
+define("NO_AGENT_CHECK", true);
+define("DisableEventsCheck", true);
+//define('BX_PULL_SKIP_LS', true);
+//if (!defined('BX_DONT_SKIP_PULL_INIT'))
+//	define("BX_SKIP_PULL_INIT", true);
+
 define('DBPersistent', true);
 $curDir = dirname(__FILE__);
 $wwwRootStrPos = strpos($curDir, '/bitrix/modules/obx.market');
@@ -37,7 +47,7 @@ if( !CModule::IncludeModule('obx.market') ) {
  * TODO: Организовать выполнение тестов через PHPUnit_Framework_TestSuite
  */
 
-abstract class OBX_Market_TestCase extends PHPUnit_Framework_TestCase {
+abstract class OBX_Market_TestCase extends \PHPUnit_Framework_TestCase {
 	protected $backupGlobals = false;
 	// pr0n1x: 2013-01-25:
 	// если переменная $backupGlobals равна true то битрикс будет косячить на каждом тесте, где есть обращение к БД
