@@ -120,7 +120,7 @@ final class OBX_Test_CIBlockPropertyPrice extends OBX_Market_TestCase
 		$bSuccess = CIBlockPropertyPrice::delete(13);
 		$arError = CIBlockPropertyPrice::popLastError('ARRAY');
 		$this->assertFalse($bSuccess);
-		$this->assertEquals(CIBlockPropertyPriceDBS::ERR_CANT_DEL_WITHOUT_PK, $arError['CODE']);
+		$this->assertEquals(CIBlockPropertyPriceDBS::E_CANT_DEL_WITHOUT_PK, $arError['CODE']);
 
 		$bSuccess = CIBlockPropertyPrice::deleteByFilter(array(
 			'IBLOCK_ID' => self::$_arTestIB['ID'],

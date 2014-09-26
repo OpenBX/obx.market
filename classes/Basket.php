@@ -12,7 +12,7 @@ namespace OBX\Market;
 
 use OBX\Core\Tools;
 use OBX\Core\MessagePoolDecorator;
-use OBX\Core\DBSimple\Result as DBSResult;
+use OBX\Core\DBSimple\DBResult;
 
 IncludeModuleLangFile(__FILE__);
 
@@ -253,13 +253,12 @@ class Basket extends MessagePoolDecorator
 	}
 
 	/**
-	 * @param DBSResult $rsBasket
+	 * @param DBResult $rsBasket
 	 */
-	public function __construct(DBSResult $rsBasket) {
+	public function __construct(DBResult $rsBasket) {
 		if($rsBasket != null && $rsBasket->SelectedRowsCount() > 0) {
-			$abstractionName = get_class(self::$_BasketDBS);
 			if($rsBasket->getDBSimpleEntity() !== self::$_BasketDBS) {
-				$this->addError('Error: Basket must be constructed from the result of '.$abstractionName.'::getList()');
+				$this->addError('Error: Basket must be constructed from the result of '.get_class(self::$_BasketDBS).'::getList()');
 				return;
 			}
 			$this->_arFields = $rsBasket->Fetch();
