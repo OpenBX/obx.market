@@ -10,12 +10,12 @@
 
 namespace OBX\Market;
 
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\DBSimple\Entity;
+use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
-class ECommerceIBlockDBS extends DBSimple
+class ECommerceIBlockDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
 	protected $_entityEventsID = 'ECommerceIBlockLink';
@@ -207,7 +207,7 @@ SQL;
 }
 
 
-class ECommerceIBlock extends DBSimpleStatic {
+class ECommerceIBlock extends EntityStatic {
 	static public function getFullList($bResultCDBResult = false) {
 		return self::getInstance()->getFullList($bResultCDBResult);
 	}
@@ -227,4 +227,4 @@ class ECommerceIBlock extends DBSimpleStatic {
 		return self::getInstance()->unRegisterModuleDependencies();
 	}
 }
-ECommerceIBlock::__initDBSimple(ECommerceIBlockDBS::getInstance());
+ECommerceIBlock::__initEntity(ECommerceIBlockDBS::getInstance());

@@ -10,15 +10,15 @@
 
 namespace OBX\Market;
 
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\DBSimple\Entity;
+use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
 /**
  *
  */
-class OrderStatusDBS extends DBSimple {
+class OrderStatusDBS extends Entity {
 	protected $_entityModuleID = 'obx.market';
 	protected $_entityEventsID = 'OrderStatusRow';
 	protected $_mainTable = 'S';
@@ -157,5 +157,5 @@ class OrderStatusDBS extends DBSimple {
 	}
 }
 
-class OrderStatus extends DBSimpleStatic {}
-OrderStatus::__initDBSimple(OrderStatusDBS::getInstance());
+class OrderStatus extends EntityStatic {}
+OrderStatus::__initEntity(OrderStatusDBS::getInstance());

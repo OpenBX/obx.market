@@ -9,8 +9,8 @@
  ***********************************************/
 
 namespace OBX\Market;
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\DBSimple\Entity;
+use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
@@ -19,7 +19,7 @@ IncludeModuleLangFile(__FILE__);
  * @package OBX\Market
  * @static @method CurrencyFormatDBS getInstance()
  */
-class CurrencyFormatDBS extends DBSimple
+class CurrencyFormatDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
 	protected $_entityEventsID = 'CurrencyFormatRow';
@@ -217,7 +217,7 @@ class CurrencyFormatDBS extends DBSimple
  * @package OBX\Market
  * @static @method CurrencyFormatDBS getInstance()
  */
-class CurrencyFormat extends DBSimpleStatic {
+class CurrencyFormat extends EntityStatic {
 	static public function getListGroupedByLang($arSort = null) {
 		return self::getInstance()->getListGroupedByLang($arSort);
 	}
@@ -225,4 +225,4 @@ class CurrencyFormat extends DBSimpleStatic {
 		return self::getInstance()->formatPrice($priceValue, $currencyCode, $langID, $arFormat);
 	}
 }
-CurrencyFormat::__initDBSimple(CurrencyFormatDBS::getInstance());
+CurrencyFormat::__initEntity(CurrencyFormatDBS::getInstance());

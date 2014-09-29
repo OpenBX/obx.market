@@ -186,13 +186,15 @@ SQL
 	protected $_arSortDefault = array('ID' => 'ASC');
 
 	function __construct() {
-		global $USER;
+		global $USER, $DB;
 		$this->_arTableFieldsDefault = array(
 			'STATUS_ID' => '1',
 			'CURRENCY' => Currency::getDefault(),
 			//'USER_ID' => $USER->GetID(),
 			'MODIFIED_BY' => $USER->GetID(),
 		);
+
+		$this->_arTableFields['TIMESTAMP_X'] = array('O' => '('.$DB->DateToCharFunction('O.TIMESTAMP_X').')');
 
 		$this->_arTableFieldsCheck = array(
 			'ID' => self::FLD_T_INT | self::FLD_NOT_NULL,

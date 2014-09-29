@@ -10,13 +10,13 @@
 
 namespace OBX\Market;
 
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
-use OBX\Core\DBSResult;
+use OBX\Core\DBSimple\Entity;
+use OBX\Core\DBSimple\EntityStatic;
+use OBX\Core\DBSimple\DBResult;
 
 IncludeModuleLangFile(__FILE__);
 
-class CIBlockPropertyPriceDBS extends DBSimple
+class CIBlockPropertyPriceDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
 	protected $_entityEventsID = 'IBlockPropertyPriceLink';
@@ -171,10 +171,10 @@ class CIBlockPropertyPriceDBS extends DBSimple
 	/**
 	 * Возвращает полный список цен для каталога(ов)
 	 * @param int $IBLOCK_ID
-	 * @param bool $bResultCDBResult
-	 * @return array|bool|\CDBResult
+	 * @param bool $bResultDBResult
+	 * @return array|bool|DBResult
 	 */
-	public function getFullPriceList($IBLOCK_ID = 0, $bResultCDBResult = false) {
+	public function getFullPriceList($IBLOCK_ID = 0, $bResultDBResult = false) {
 		global $DB;
 		$IBLOCK_ID = intval($IBLOCK_ID);
 		$sqlList = <<<SQL
@@ -213,9 +213,8 @@ SQL;
 		}
 		$sqlList .= ' ORDER BY IB.ID ASC, PR.ID ASC';
 		$res = $DB->Query($sqlList, false, 'File: '.__FILE__."<br />\nLine: ".__LINE__);
-		$res = new DBSResult($res);
-		$res->setAbstractionName(get_called_class());
-		if($bResultCDBResult) {
+		$res = new DBResult($this, $res);
+		if($bResultDBResult) {
 			return $res;
 		}
 		$arList = array();
@@ -232,7 +231,7 @@ SQL;
 	 * не вернет строк, в отличие от getFullPriceList, которые вернет строки с null
 	 * @param int $IBLOCK_ID
 	 * @param bool $bResultCDBResult
-	 * @return array|bool|DBSResult
+	 * @return array|bool|DBResult
 	 */
 	public function getFullPropList($IBLOCK_ID = 0, $bResultCDBResult = false) {
 		global $DB;
@@ -271,8 +270,7 @@ SQL;
 			$sqlList .= ' AND B.ID = '.$IBLOCK_ID;
 		}
 		$res = $DB->Query($sqlList, false, 'File: '.__FILE__."<br />\nLine: ".__LINE__);
-		$res = new DBSResult($res);
-		$res->setAbstractionName(get_called_class());
+		$res = new DBResult($this, $res);
 		if($bResultCDBResult) {
 			return $res;
 		}
@@ -423,12 +421,12 @@ SQL;
 }
 
 
-class CIBlockPropertyPrice extends DBSimpleStatic {
+class CIBlockPropertyPrice extends EntityStatic {
 	static public function delete($ID, $bDeleteIBlockProp = false) {
 		return self::getInstance()->delete($ID, $bDeleteIBlockProp);
 	}
-	static public function getFullPriceList($IBLOCK_ID = 0, $bResultCDBResult = false) {
-		return self::getInstance()->getFullPriceList($IBLOCK_ID, $bResultCDBResult);
+	static public function getFullPriceList($IBLOCK_ID = 0, $bResultDBResult = false) {
+		return self::getInstance()->getFullPriceList($IBLOCK_ID, $bResultDBResult);
 	}
 	static public function getFullPropList($IBLOCK_ID = 0, $bResultCDBResult = false) {
 		return self::getInstance()->getFullPropList($IBLOCK_ID, $bResultCDBResult);
@@ -454,4 +452,4 @@ class CIBlockPropertyPrice extends DBSimpleStatic {
 		return self::getInstance()->unRegisterModuleDependencies();
 	}
 }
-CIBlockPropertyPrice::__initDBSimple(CIBlockPropertyPriceDBS::getInstance());
+CIBlockPropertyPrice::__initEntity(CIBlockPropertyPriceDBS::getInstance());

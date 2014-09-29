@@ -10,13 +10,13 @@
 
 namespace OBX\Market;
 
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\DBSimple\Entity;
+use OBX\Core\DBSimple\EntityStatic;
 
 
 IncludeModuleLangFile(__FILE__);
 
-class BasketDBS extends DBSimple
+class BasketDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
 	protected $_entityEventsID = 'BasketRow';
@@ -227,6 +227,6 @@ SQLCHUNK
 		return true;
 	}
 }
-class BasketList extends DBSimpleStatic {
+class BasketList extends EntityStatic {
 }
-BasketList::__initDBSimple(BasketDBS::getInstance());
+BasketList::__initEntity(BasketDBS::getInstance());

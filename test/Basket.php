@@ -198,7 +198,7 @@ final class OBX_Test_Basket extends OBX_Test_Lib_Basket
 		 */
 		$Basket = &self::$_BasketArray[$basketName];
 		$addQuantity = rand(1, 9);
-		foreach(self::$_arPoductList as &$arElement) {
+		foreach(self::$_arProductList as &$arElement) {
 			$newQuantity = $Basket->addProduct($arElement['ID'], $addQuantity);
 			if( $newQuantity < 0 ) {
 				$arError = $Basket->popLastError('ARRAY');
@@ -234,7 +234,7 @@ final class OBX_Test_Basket extends OBX_Test_Lib_Basket
 		$this->assertNotEmpty($arItemsList);
 
 		$dbCheckBasketCost = 0;
-		foreach(self::$_arPoductList as &$arIBElement) {
+		foreach(self::$_arProductList as &$arIBElement) {
 			if( array_key_exists('__DELETED', $arIBElement) ) {
 				continue;
 			}
@@ -270,7 +270,7 @@ final class OBX_Test_Basket extends OBX_Test_Lib_Basket
 		 * @var Basket $Basket
 		 */
 		$Basket = &self::$_BasketArray[$basketName];
-		foreach(self::$_arPoductList as $arIBElement) {
+		foreach(self::$_arProductList as $arIBElement) {
 			$Basket->setProductPriceValue($arIBElement['ID'], 268);
 			$Basket->setProductQuantity($arIBElement['ID'], 68);
 		}
@@ -289,7 +289,7 @@ final class OBX_Test_Basket extends OBX_Test_Lib_Basket
 		 */
 		$Basket = &self::$_BasketArray[$basketName];
 		$iItem = 0;
-		foreach(self::$_arPoductList as &$arIBElement) {
+		foreach(self::$_arProductList as &$arIBElement) {
 			$iItem++;
 			if($iItem == 6) {
 				break;
@@ -325,7 +325,7 @@ final class OBX_Test_Basket extends OBX_Test_Lib_Basket
 		$this->assertTrue($Basket->isEmpty());
 		$this->assertEquals(0, $Basket->getProductsCount());
 		$this->assertEquals(0, $Basket->getCost());
-		foreach(self::$_arPoductList as &$arIBElement) {
+		foreach(self::$_arProductList as &$arIBElement) {
 			$this->assertTrue($Basket->isEmpty($arIBElement['ID']));
 			$this->assertEquals(0, $Basket->getProductCost($arIBElement['ID']));
 			$this->assertEquals(0, $Basket->getProductQuantity($arIBElement['ID']));

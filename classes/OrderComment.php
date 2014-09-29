@@ -10,12 +10,12 @@
 
 namespace OBX\Market;
 
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\DBSimple\Entity;
+use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
-class OrderCommentDBS extends DBSimple
+class OrderCommentDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
 	protected $_entityEventsID = 'OrderCommentRow';
@@ -50,5 +50,5 @@ class OrderCommentDBS extends DBSimple
 		);
 	}
 }
-class OrderComment extends DBSimpleStatic {}
-OrderComment::__initDBSimple(OrderCommentDBS::getInstance());
+class OrderComment extends EntityStatic {}
+OrderComment::__initEntity(OrderCommentDBS::getInstance());

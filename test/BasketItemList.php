@@ -126,7 +126,7 @@ final class OBX_Test_BasketItemList extends OBX_Test_Lib_Basket
 	 * @depends testGetTestIBlockData
 	 */
 	public function testAdd2Basket() {
-		foreach(self::$_arPoductList as $arElement) {
+		foreach(self::$_arProductList as $arElement) {
 			$arOptimalPrice = self::$_PriceDBS->getOptimalProductPrice($arElement['ID']);
 			$this->assertNotEmpty($arOptimalPrice, 'Error: can\'t get optimal price of product. Check price permissions');
 			$newBasketITemID = self::$_BasketItemDBS->add(array(
@@ -153,7 +153,7 @@ final class OBX_Test_BasketItemList extends OBX_Test_Lib_Basket
 	 * @depends testGetTestIBlockData
 	 */
 	public function testAddToOrder() {
-		foreach(self::$_arPoductList as $arElement) {
+		foreach(self::$_arProductList as $arElement) {
 			$arOptimalPrice = self::$_PriceDBS->getOptimalProductPrice($arElement['ID']);
 			$this->assertNotEmpty($arOptimalPrice, 'Error: can\'t get optimal price of product. Check price permissions');
 			$newBasketITemID = self::$_BasketItemDBS->add(array(

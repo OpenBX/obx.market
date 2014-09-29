@@ -10,15 +10,15 @@
 
 namespace OBX\Market;
 
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\DBSimple\Entity;
+use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
 /**
  *
  */
-class OrderPropertyEnumDBS extends DBSimple
+class OrderPropertyEnumDBS extends Entity
 {
 
 	protected $_entityModuleID = 'obx.market';
@@ -98,6 +98,6 @@ class OrderPropertyEnumDBS extends DBSimple
 		return true;
 	}
 }
-class OrderPropertyEnum extends DBSimpleStatic {}
-OrderPropertyEnum::__initDBSimple(OrderPropertyEnumDBS::getInstance());
+class OrderPropertyEnum extends EntityStatic {}
+OrderPropertyEnum::__initEntity(OrderPropertyEnumDBS::getInstance());
 ?>
