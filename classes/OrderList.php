@@ -15,8 +15,8 @@
 
 namespace OBX\Market;
 
-use OBX\Core\DBSimple;
-use OBX\Core\DBSimpleStatic;
+use OBX\Core\DBSimple\Entity;
+use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
@@ -24,7 +24,7 @@ IncludeModuleLangFile(__FILE__);
  * Class OrderDBS
  * @method @static self getInstance()
  */
-class OrderDBS extends DBSimple
+class OrderDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
 	protected $_entityEventsID = 'OrderRow';
@@ -318,9 +318,9 @@ SQL
  * Class OrderList
  * @method @static OrderDBS getInstance()
  */
-class OrderList extends DBSimpleStatic {
+class OrderList extends EntityStatic {
 	static public function add($arFields = array()) {
 		return parent::add($arFields);
 	}
 }
-OrderList::__initDBSimple(OrderDBS::getInstance());
+OrderList::__initEntity(OrderDBS::getInstance());
