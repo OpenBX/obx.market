@@ -153,9 +153,7 @@ SQL
 		'U'		=> 'O.USER_ID = U.ID'
 	);
 
-	protected $_arGroupByFields = array(
-		"O" => "ID"
-	);
+	protected $_arGroupByFields = array('O.ID');
 
 	protected $_arFieldsEditInAdmin = array(
 		'USER_ID',

@@ -207,10 +207,11 @@ SQL;
 		$i = 0;
 		$refArOptimalPrice = null;
 		while ($arPrice = $res->Fetch()) {
-			$resProp = \CIBlockElement::GetProperty($arPrice["IBLOCK_ID"], $productID, array(),
-				array(
-					"ID" => $arPrice["IBLOCK_PROP_ID"]
-				));
+			$resProp = \CIBlockElement::GetProperty(
+				$arPrice["IBLOCK_ID"], $productID,
+				"sort", "asc",
+				array("ID" => $arPrice["IBLOCK_PROP_ID"])
+			);
 			$arNullResultDefault = CurrencyFormatDBS::getInstance()->getTableJoinNullFieldDefaults();
 			if($arPrice['CURRENCY_FORMAT'] == null) {
 				$arPrice['CURRENCY_FORMAT'] = $arNullResultDefault['FORMAT'];
@@ -238,21 +239,24 @@ SQL;
 				$this->addError(GetMessage('OBX_MARKET_PRICE_ERROR_15'), 15);
 				return array();
 			}
-
 			$arResult[$i] = $arPrice;
-
 			$arResult[$i]["VALUE"] = $arPriceProp["VALUE"];
-			$resProp = \CIBlockElement::GetProperty($arPrice["IBLOCK_ID"], $productID, array(),
-				array(
-					"ID" => $arPrice["DISCOUNT_VAL_PROP_ID"]
-				));
+
 			$discountPercent = 0;
-			if ($arDiscount = $resProp->Fetch()) {
-				if (floatval($arDiscount["VALUE"]) > 1) {
-					$discountPercent = floatval($arDiscount["VALUE"]);
+			if(!empty($arPrice["DISCOUNT_VAL_PROP_ID"])) {
+				$resProp = \CIBlockElement::GetProperty(
+					$arPrice["IBLOCK_ID"], $productID,
+					"sort", "asc",
+					array("ID" => $arPrice["DISCOUNT_VAL_PROP_ID"])
+				);
+				if ($arDiscount = $resProp->Fetch()) {
+					if (floatval($arDiscount["VALUE"]) > 1) {
+						$discountPercent = floatval($arDiscount["VALUE"]);
+					}
 				}
+				$discountValue = floatval($arPriceProp["VALUE"]*$discountPercent/100);
 			}
-			$discountValue = floatval($arPriceProp["VALUE"]*$discountPercent/100);
+
 			$arResult[$i]["DISCOUNT_PERCENT"] = $discountPercent;
 			$arResult[$i]["DISCOUNT_VALUE"] = $discountValue;
 			$arResult[$i]["TOTAL_VALUE"] = $arPriceProp["VALUE"] - $discountValue;

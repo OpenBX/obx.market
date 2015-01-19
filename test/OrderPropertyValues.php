@@ -1,4 +1,4 @@
-<?php
+array_key_exists<?php
 /***********************************************
  ** @product OpenBX:Market Bitrix Module      **
  ** @authors                                  **

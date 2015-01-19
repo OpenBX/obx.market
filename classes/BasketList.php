@@ -83,9 +83,7 @@ SQLCHUNK
 	protected $_arTableLeftJoin = array(
 		'BI' => 'B.ID = BI.BASKET_ID'
 	);
-	protected $_arGroupByFields = array(
-		'B' => 'ID'
-	);
+	protected $_arGroupByFields = array('B.ID');
 
 	protected $_arSelectDefault = array(
 		'ID', 'ORDER_ID', 'USER_ID', 'HASH_STRING', 'CURRENCY'
