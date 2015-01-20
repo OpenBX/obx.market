@@ -31,7 +31,7 @@ class BasketDBS extends Entity
 		'USER_ID'			=> array('B' => 'USER_ID'),
 		'HASH_STRING'		=> array('B' => 'HASH_STRING'),
 		'CURRENCY'			=> array('B' => 'CURRENCY'),
-		'ITEMS_JSON' => array('BI' => <<<SQLCHUNK
+		'ITEMS_JSON' => array('BI' => <<<SQL
 				concat(
 					'{',
 						'"items": [',
@@ -51,7 +51,7 @@ class BasketDBS extends Entity
 						'"cost": "', SUM(BI.PRICE_VALUE * BI.QUANTITY) ,'"'
 					'}'
 				)
-SQLCHUNK
+SQL
 		),
 		'ITEMS_COST' => array(
 			'BI' => 'SUM(BI.PRICE_VALUE * BI.QUANTITY)',
