@@ -205,26 +205,3 @@ SQL;
 			'obx.market', __CLASS__, 'onIBlockDelete');
 	}
 }
-
-
-class ECommerceIBlock extends EntityStatic {
-	static public function getFullList($bResultCDBResult = false) {
-		return self::getInstance()->getFullList($bResultCDBResult);
-	}
-	static public function clearCachedList(){
-		return self::getInstance()->clearCachedList();
-	}
-	static public function getCachedList(){
-		return self::getInstance()->getCachedList();
-	}
-	static public function onIBlockDelete($ID) {
-		return self::getInstance()->onIBlockDelete($ID);
-	}
-	static public function registerModuleDependencies() {
-		return self::getInstance()->registerModuleDependencies();
-	}
-	static public function unRegisterModuleDependencies() {
-		return self::getInstance()->unRegisterModuleDependencies();
-	}
-}
-ECommerceIBlock::__initEntity(ECommerceIBlockDBS::getInstance());

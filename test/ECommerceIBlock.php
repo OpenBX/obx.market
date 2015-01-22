@@ -9,9 +9,7 @@
  ***********************************************/
 
 use OBX\Market\ECommerceIBlock;
-use OBX\Market\ECommerceIBlockDBS;
-use OBX\Core\Tools;
-use OBX\Core\DBSimple;
+use OBX\Core\DBSimple\Entity;
 
 OBX_Market_TestCase::includeLang(__FILE__);
 
@@ -53,7 +51,7 @@ final class OBX_Test_ECommerceIBlock extends OBX_Market_TestCase
 				$this->assertTrue(is_array($arError), 'Can\'t get error data');
 				$this->assertArrayHasKey('CODE', $arError, 'Can\'t get error code');
 				$this->assertArrayHasKey('TEXT', $arError, 'Can\'t get error text');
-				if($arError['CODE'] != DBSimple::E_DUP_PK) {
+				if($arError['CODE'] != Entity::E_DUP_PK) {
 					$this->assertGreaterThan(0, $newEComIBlockLink, 'Error: code: '.$arError['CODE'].'; text: '.$arError['TEXT'].'.');
 				}
 				else {

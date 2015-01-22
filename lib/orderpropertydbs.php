@@ -11,7 +11,6 @@
 namespace OBX\Market;
 
 use OBX\Core\DBSimple\Entity;
-use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
@@ -158,30 +157,4 @@ class OrderPropertyDBS extends Entity
 		}
 		return true;
 	}
-
-
-	public function registerModuleDependencies() {
-
-	}
-
-	public function unRegisterModuleDependencies() {
-
-	}
 }
-
-/**
- * Class OrderProperty
- * @package OBX\Market
- * @method @static OrderProperty getInstance
- */
-class OrderProperty extends EntityStatic {
-	static public function registerModuleDependencies() {
-		return self::getInstance()->registerModuleDependencies();
-	}
-
-	static public function unRegisterModuleDependencies() {
-		return self::getInstance()->unRegisterModuleDependencies();
-	}
-}
-
-OrderProperty::__initEntity(OrderPropertyDBS::getInstance());

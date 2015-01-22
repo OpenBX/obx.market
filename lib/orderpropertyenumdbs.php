@@ -11,7 +11,6 @@
 namespace OBX\Market;
 
 use OBX\Core\DBSimple\Entity;
-use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
@@ -98,6 +97,3 @@ class OrderPropertyEnumDBS extends Entity
 		return true;
 	}
 }
-class OrderPropertyEnum extends EntityStatic {}
-OrderPropertyEnum::__initEntity(OrderPropertyEnumDBS::getInstance());
-?>
