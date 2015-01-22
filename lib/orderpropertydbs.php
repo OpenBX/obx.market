@@ -14,6 +14,7 @@ use OBX\Core\DBSimple\Entity;
 use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
+
 class OrderPropertyDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';

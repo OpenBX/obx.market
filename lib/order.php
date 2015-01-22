@@ -16,7 +16,6 @@ use \OBX\Core\MessagePoolDecorator;
 
 IncludeModuleLangFile(__FILE__);
 
-
 class Order extends MessagePoolDecorator {
 
 	const EVENT_FINISH = 'onMakeOrderFinish';

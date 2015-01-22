@@ -12,6 +12,8 @@ namespace OBX\Market;
 
 use OBX\Core\DBSimple\Entity;
 
+IncludeModuleLangFile(__FILE__);
+
 /**
  * Class CurrencyFormatDBS
  * @package OBX\Market

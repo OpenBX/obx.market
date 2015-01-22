@@ -13,6 +13,8 @@ namespace OBX\Market;
 use OBX\Market\Currency as OBX_Currency;
 use OBX\Market\CurrencyFormat as OBX_CurrencyFormat;
 
+IncludeModuleLangFile(__FILE__);
+
 class Settings_Currency extends Settings {
 	protected $listTableColumns = 10;
 

@@ -10,6 +10,8 @@
 
 namespace OBX\Market;
 
+IncludeModuleLangFile(__FILE__);
+
 class Settings_Catalog extends Settings {
 
 	protected $listTableColumns = 5;

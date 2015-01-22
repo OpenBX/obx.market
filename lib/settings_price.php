@@ -10,6 +10,7 @@
 
 namespace OBX\Market;
 
+IncludeModuleLangFile(__FILE__);
 
 class Settings_Price extends Settings {
 
