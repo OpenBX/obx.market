@@ -7,3 +7,11 @@
  ** @mailto rootfavell@gmail.com              **
  ** @copyright 2015 DevTop                    **
  ***********************************************/
+
+namespace OBX\Market;
+
+use OBX\Core\DBSimple\EntityStatic;
+
+
+class BasketList extends EntityStatic {}
+BasketList::__initEntity(BasketDBS::getInstance());

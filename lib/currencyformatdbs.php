@@ -5,14 +5,12 @@
  **         Maksim S. Makarov aka pr0n1x      **
  ** @license Affero GPLv3                     **
  ** @mailto rootfavell@gmail.com              **
- ** @copyright 2013 DevTop                    **
+ ** @copyright 2015 DevTop                    **
  ***********************************************/
 
 namespace OBX\Market;
-use OBX\Core\DBSimple\Entity;
-use OBX\Core\DBSimple\EntityStatic;
 
-IncludeModuleLangFile(__FILE__);
+use OBX\Core\DBSimple\Entity;
 
 /**
  * Class CurrencyFormatDBS
@@ -34,7 +32,7 @@ class CurrencyFormatDBS extends Entity
 			array('F' => 'CURRENCY'),
 			array('C' => 'CURRENCY')
 		)
-		,1 => array(
+	,1 => array(
 			array('L' => 'LID'),
 			array('F' => 'LANGUAGE_ID')
 		)
@@ -211,18 +209,3 @@ class CurrencyFormatDBS extends Entity
 			$arFormat['FORMAT']);
 	}
 }
-
-/**
- * Class CurrencyFormat
- * @package OBX\Market
- * @static @method CurrencyFormatDBS getInstance()
- */
-class CurrencyFormat extends EntityStatic {
-	static public function getListGroupedByLang($arSort = null) {
-		return self::getInstance()->getListGroupedByLang($arSort);
-	}
-	static public function formatPrice($priceValue, $currencyCode = null, $langID = LANGUAGE_ID, $arFormat = null) {
-		return self::getInstance()->formatPrice($priceValue, $currencyCode, $langID, $arFormat);
-	}
-}
-CurrencyFormat::__initEntity(CurrencyFormatDBS::getInstance());

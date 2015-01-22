@@ -8,7 +8,7 @@
  ** @copyright 2013 DevTop                    **
  ***********************************************/
 
-namespace OBX\Market;
+namespace OBX\Market\DBSimple2_Example;
 
 use OBX\Core\DBSimple\Entity;
 use OBX\Core\DBSimple\EntityStatic;
@@ -22,16 +22,20 @@ class BasketDBS extends Entity
 	protected $_entityEventsID = 'BasketRow';
 	protected $_mainTable = 'B';
 	protected $_arTableList = array(
-		'B'		=> 'obx_basket',
-		'BI'	=> 'obx_basket_items'
+		'B' => array('NAME' => 'obx_basket'),
+		'BI' => array(
+			'obx_basket_items',
+			'LINK' => 'left_join',
+			'CONDITION' => 'B.ID = BI.BASKET_ID'
+		)
 	);
 	protected $_arTableFields = array(
-		'ID'				=> array('B' => 'ID'),
-		'ORDER_ID'			=> array('B' => 'ORDER_ID'),
-		'USER_ID'			=> array('B' => 'USER_ID'),
-		'HASH_STRING'		=> array('B' => 'HASH_STRING'),
-		'CURRENCY'			=> array('B' => 'CURRENCY'),
-		'ITEMS_JSON' => array('BI' => <<<SQL
+		'ID'				=> 'B.ID',
+		'ORDER_ID'			=> 'B.ORDER_ID',
+		'USER_ID'			=> 'B.USER_ID',
+		'HASH_STRING'		=> 'B.HASH_STRING',
+		'CURRENCY'			=> 'B.CURRENCY',
+		'ITEMS_JSON' => array('SUB_QUERY' => <<<SQL
 				concat(
 					'{',
 						'"items": [',
@@ -54,37 +58,34 @@ class BasketDBS extends Entity
 SQL
 		),
 		'ITEMS_COST' => array(
-			'BI' => 'SUM(BI.PRICE_VALUE * BI.QUANTITY)',
-			'GET_LIST_FILTER' => '(
+			'SUB_QUERY' => 'SUM(BI.PRICE_VALUE * BI.QUANTITY)',
+			'SUB_QUERY_4_FILTER' => '(
 					SELECT SUM(WBI.PRICE_VALUE * WBI.QUANTITY)
 					FROM obx_basket_items as WBI
 					WHERE WBI.BASKET_ID = B.ID
-				)'
+				)',
+			'REQUIRED_TABLES' => array('BI')
 		),
 		'ITEMS_TOTAL_COST' => array(
-			'BI'=> 'SUM(BI.TOTAL_PRICE_VALUE * BI.QUANTITY)',
-			'REQUIRED_TABLES' => 'B',
-			'GET_LIST_FILTER' => '(
+			'SUB_QUERY'=> 'SUM(BI.TOTAL_PRICE_VALUE * BI.QUANTITY)',
+			'SUB_QUERY_4_FILTER' => '(
 					SELECT SUM(WBI.TOTAL_PRICE_VALUE * WBI.QUANTITY)
 					FROM obx_basket_items as WBI
 					WHERE WBI.BASKET_ID = B.ID
-				)'
+				)',
+			'REQUIRED_TABLES' => array('B', 'BI'),
 		),
 		'PRODUCT_COUNT' => array(
-			'BI' => 'SUM(1)',
-			'REQUIRED_TABLES' => 'B',
+			'SUB_QUERY' => 'SUM(1)',
 			'GET_LIST_FILTER' => '(
 					SELECT COUNT(WBI.ID)
 					FROM obx_basket_items as WBI
 					WHERE WBI.BASKET_ID = B.ID
-				)'
+				)',
+			'REQUIRED_TABLES' => array('B', 'BI'),
 		),
 	);
-	protected $_arTableLeftJoin = array(
-		'BI' => 'B.ID = BI.BASKET_ID'
-	);
 	protected $_arGroupByFields = array('B.ID');
-
 	protected $_arSelectDefault = array(
 		'ID', 'ORDER_ID', 'USER_ID', 'HASH_STRING', 'CURRENCY'
 	);

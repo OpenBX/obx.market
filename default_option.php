@@ -1,9 +1,12 @@
 <?
-/*****************************************
- ** @product Market-Start Bitrix Module **
- ** @vendor A68 Studio                  **
- ** @mailto info@a-68.ru                **
- *****************************************/
+/***********************************************
+ ** @product OBX:Market Bitrix Module         **
+ ** @authors                                  **
+ **         Maksim S. Makarov aka pr0n1x      **
+ ** @license Affero GPLv3                     **
+ ** @mailto rootfavell@gmail.com              **
+ ** @copyright 2015 DevTop                    **
+ ***********************************************/
 
 IncludeModuleLangFile(__FILE__);
 $obx_market_default_option = array(

@@ -11,7 +11,6 @@
 namespace OBX\Market;
 
 use OBX\Core\DBSimple\Entity;
-use OBX\Core\DBSimple\EntityStatic;
 
 IncludeModuleLangFile(__FILE__);
 
@@ -545,37 +544,3 @@ SQL;
 		}
 	}
 }
-
-/**
- * @method @static PriceDBS getInstance()
- */
-class Price extends EntityStatic {
-	static public function getOptimalProductPrice($productID, $userID = null, $langID = LANGUAGE_ID) {
-		return self::getInstance()->getOptimalProductPrice($productID, $userID, $langID);
-	}
-	static public function getProductPriceList($productID, $userID = null) {
-		return self::getInstance()->getProductPriceList($productID, $userID);
-	}
-	static public function formatPrice($priceValue, $priceCode, $langID = null) {
-		return self::getInstance()->formatPrice($priceValue, $priceCode, $langID);
-	}
-	static public function addGroup($priceID, $groupID = 0) {
-		return self::getInstance()->addGroup($priceID, $groupID);
-	}
-	static public function removeGroup($priceID, $groupID = 0) {
-		return self::getInstance()->removeGroup($priceID, $groupID);
-	}
-	static public function setGroupList($priceID, $arGroupIDList) {
-		return self::getInstance()->setGroupList($priceID, $arGroupIDList);
-	}
-	static public function getGroupList($priceID, $bReturnCDBResult = false) {
-		return self::getInstance()->getGroupList($priceID, $bReturnCDBResult);
-	}
-	static public function getGroupListCached($priceID) {
-		return self::getInstance()->getGroupListCached($priceID);
-	}
-	static public function getAvailPriceForUser($userID, $bReturnCDBResult = false) {
-		return self::getInstance()->getAvailPriceForUser($userID, $bReturnCDBResult);
-	}
-}
-Price::__initEntity(PriceDBS::getInstance());

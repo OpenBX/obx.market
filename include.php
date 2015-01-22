@@ -1,4 +1,15 @@
 <?php
+/***********************************************
+ ** @product OBX:Market Bitrix Module         **
+ ** @authors                                  **
+ **         Maksim S. Makarov aka pr0n1x      **
+ ** @license Affero GPLv3                     **
+ ** @mailto rootfavell@gmail.com              **
+ ** @copyright 2015 DevTop                    **
+ ***********************************************/
+
+use Bitrix\Main\Loader;
+
 IncludeModuleLangFile(__FILE__);
 
 if(!CModule::IncludeModule('iblock')){
@@ -22,10 +33,10 @@ if(!CModule::IncludeModule('obx.core')) {
 		return false;
 	}
 }
+Loader::registerAutoLoadClasses('obx.market', array(
+	'OBX_Market_BXMainEventsHandlers' => 'lib/bxmaineventshandlers.php'
+));
 
-$arModuleClasses = require dirname(__FILE__).'/classes/.classes.php';
-CModule::AddAutoloadClasses('obx.market', $arModuleClasses);
-require dirname(__FILE__).'/tools.php';
 $arEventList = GetModuleEvents('obx.market', 'onAfterModuleInclude', true);
 foreach($arEventList as $arEvent) {
 	ExecuteModuleEventEx($arEvent, array());

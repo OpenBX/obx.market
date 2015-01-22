@@ -11,8 +11,6 @@
 namespace OBX\Market;
 
 use OBX\Core\DBSimple\Entity;
-use OBX\Core\DBSimple\EntityStatic;
-
 
 IncludeModuleLangFile(__FILE__);
 
@@ -524,15 +522,3 @@ SQL
 					__CLASS__, 'onIBlockElementDelete');*/
 	}
 }
-
-class BasketItem extends EntityStatic {
-	static public function registerModuleDependencies() {
-		return self::getInstance()->registerModuleDependencies();
-	}
-
-	static public function unRegisterModuleDependencies() {
-		return self::getInstance()->unRegisterModuleDependencies();
-	}
-}
-
-BasketItem::__initEntity(BasketItemDBS::getInstance());

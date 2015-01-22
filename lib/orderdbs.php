@@ -312,13 +312,4 @@ SQL
 	}
 }
 
-/**
- * Class OrderList
- * @method @static OrderDBS getInstance()
- */
-class OrderList extends EntityStatic {
-	static public function add($arFields = array()) {
-		return parent::add($arFields);
-	}
-}
-OrderList::__initEntity(OrderDBS::getInstance());
+

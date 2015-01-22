@@ -11,7 +11,7 @@
 namespace OBX\Market;
 
 use OBX\Core\DBSimple\Entity;
-use OBX\Core\DBSimple\EntityStatic;
+
 
 IncludeModuleLangFile(__FILE__);
 
@@ -190,16 +190,4 @@ class CurrencyDBS extends Entity {
 		return array();
 	}
 }
-class Currency extends EntityStatic {
 
-	static public function setDefault($currency, &$bIsAlreadyDefault = false) {
-		return self::getInstance()->setDefault($currency, $bIsAlreadyDefault);
-	}
-	static public function getDefault() {
-		return self::getInstance()->getDefault();
-	}
-	static public function getDefaultArray() {
-		return self::getInstance()->getDefaultArray();
-	}
-}
-Currency::__initEntity(CurrencyDBS::getInstance());
