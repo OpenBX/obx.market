@@ -21,7 +21,7 @@
 	[classes]
 		path: %SELF_FOLDER%/classes
 	[options]
-    		path: %SELF_FOLDER%/options.php
+		path: %SELF_FOLDER%/options.php
 	[admin]
 		path: %SELF_FOLDER%/admin/
 	[admin.ajax]
