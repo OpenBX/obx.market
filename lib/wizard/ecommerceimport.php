@@ -350,7 +350,6 @@ class ECommerceImport extends ImportIBlock
 //				'SORT' => 100,
 //				'PROPERTY_TYPE' => 'S',
 //				'ACTIVE' => 'Y',
-//				'IS_SYS' => 'Y',
 //				'ACCESS' => 'W',
 //				'IS_SYS' => 'Y',
 //				OBX_MAGIC_WORD => 'Y'

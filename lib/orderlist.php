@@ -14,7 +14,7 @@ use OBX\Core\DBSimple\EntityStatic;
 
 /**
  * Class OrderList
- * @method @static OrderDBS getInstance()
+ * @package OBX\Market
  */
 class OrderList extends EntityStatic {
 	static public function add($arFields = array()) {

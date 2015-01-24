@@ -17,14 +17,8 @@ IncludeModuleLangFile(__FILE__);
 /**
  * Class CurrencyFormat
  * @package OBX\Market
- * @static @method CurrencyFormatDBS getInstance()
+ * @method static getListGroupedByLang($arSort = null)
+ * @method static formatPrice($priceValue, $currencyCode = null, $langID = LANGUAGE_ID, $arFormat = null)
  */
-class CurrencyFormat extends EntityStatic {
-	static public function getListGroupedByLang($arSort = null) {
-		return self::getInstance()->getListGroupedByLang($arSort);
-	}
-	static public function formatPrice($priceValue, $currencyCode = null, $langID = LANGUAGE_ID, $arFormat = null) {
-		return self::getInstance()->formatPrice($priceValue, $currencyCode, $langID, $arFormat);
-	}
-}
+class CurrencyFormat extends EntityStatic {}
 CurrencyFormat::__initEntity(CurrencyFormatDBS::getInstance());

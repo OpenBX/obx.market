@@ -1,9 +1,12 @@
 <?
-/*************************************************
- ** @product OBX:Market Bitrix Module Installer **
- ** @License EULA                               **
- ** @copyright 2013 DevTop                      **
- *************************************************/
+/***********************************************
+ ** @product OBX:Market Bitrix Module         **
+ ** @authors                                  **
+ **         Maksim S. Makarov aka pr0n1x      **
+ ** @license Affero GPLv3                     **
+ ** @mailto rootfavell@gmail.com              **
+ ** @copyright 2015 DevTop                    **
+ ***********************************************/
 
 use OBX\Market\Currency;
 use OBX\Market\CurrencyFormat;
@@ -209,10 +212,34 @@ class obx_market extends CModule {
 		}
 		return $this->bSuccessUnInstallDB;
 	}
-	
+
+	private function explicitIncludeModuleClasses() {
+		require_once __DIR__.'/../../obx.core/lib/dbsimple/ientity.php';
+		require_once __DIR__.'/../../obx.core/lib/dbsimple/ientitystatic.php';
+		require_once __DIR__.'/../../obx.core/lib/dbsimple/entity.php';
+		require_once __DIR__.'/../../obx.core/lib/dbsimple/entitystatic.php';
+		require_once __DIR__.'/../lib/currencydbs.php';
+		require_once __DIR__.'/../lib/currency.php';
+		require_once __DIR__.'/../lib/currencyformatdbs.php';
+		require_once __DIR__.'/../lib/currencyformat.php';
+		require_once __DIR__.'/../lib/currencyinfo.php';
+		require_once __DIR__.'/../lib/pricedbs.php';
+		require_once __DIR__.'/../lib/price.php';
+		require_once __DIR__.'/../lib/orderstatusdbs.php';
+		require_once __DIR__.'/../lib/orderstatus.php';
+		require_once __DIR__.'/../lib/orderpropertydbs.php';
+		require_once __DIR__.'/../lib/orderproperty.php';
+		require_once __DIR__.'/../lib/orderpropertyenumdbs.php';
+		require_once __DIR__.'/../lib/orderpropertyenum.php';
+		require_once __DIR__.'/../lib/ecommerceiblockdbs.php';
+		require_once __DIR__.'/../lib/ecommerceiblock.php';
+		require_once __DIR__.'/../lib/ciblockpropertypricedbs.php';
+		require_once __DIR__.'/../lib/ciblockpropertyprice.php';
+	}
+
 	public function InstallEvents() {
 		RegisterModuleDependences("main", "OnBuildGlobalMenu", "obx.market", "OBX_Market_BXMainEventsHandlers", "OnbBuildGlobalMenu");
-		require_once $_SERVER["DOCUMENT_ROOT"] . BX_ROOT . "/modules/" . $this->MODULE_ID . "/include_static.php";
+		$this->explicitIncludeModuleClasses();
 		ECommerceIBlock::registerModuleDependencies();
 		CIBlockPropertyPrice::registerModuleDependencies();
 		$this->bSuccessInstallEvents = true;
@@ -221,7 +248,7 @@ class obx_market extends CModule {
 
 	public function UnInstallEvents() {
 		UnRegisterModuleDependences("main", "OnBuildGlobalMenu", "obx.market", "OBX_Market_BXMainEventsHandlers", "OnbBuildGlobalMenu");
-		require_once $_SERVER["DOCUMENT_ROOT"] . BX_ROOT . "/modules/" . $this->MODULE_ID . "/include_static.php";
+		$this->explicitIncludeModuleClasses();
 		ECommerceIBlock::unRegisterModuleDependencies();
 		CIBlockPropertyPrice::unRegisterModuleDependencies();
 		$this->bSuccessUnInstallEvents = true;
@@ -383,7 +410,9 @@ class obx_market extends CModule {
 							$strErrors = '';
 							if(is_file($depInstallModulePath.'/'.$updateFolder.'/updater.dep.php')) {
 								$GLOBALS['__runAutoGenUpdater'] = true;
+								/** @noinspection PhpDynamicAsStaticMethodCallInspection */
 								CUpdateSystem::AddMessage2Log('Run updater of Dependency '.$depModID);
+								/** @noinspection PhpDynamicAsStaticMethodCallInspection */
 								CUpdateSystem::RunUpdaterScript(
 									$depInstallModulePath.'/'.$updateFolder.'/updater.dep.php',
 									$strErrors,
@@ -398,6 +427,7 @@ class obx_market extends CModule {
 							if(strlen($strErrors)>0) {
 								$logError = 'Update dependency error '.$depModID.': '."\n".$strErrors;
 								$this->arErrors[] = $logError;
+								/** @noinspection PhpDynamicAsStaticMethodCallInspection */
 								CUpdateSystem::AddMessage2Log($logError);
 								$this->bSuccessInstallDeps = false;
 							}
@@ -452,7 +482,9 @@ class obx_market extends CModule {
 	}
 
 	public function InstallData() {
-		require_once $_SERVER["DOCUMENT_ROOT"] . BX_ROOT . "/modules/" . $this->MODULE_ID . "/include.php";
+		$this->explicitIncludeModuleClasses();
+
+
 		Currency::add(array(
 			'CURRENCY' => 'RUB',
 			'SORT' => '10'
@@ -534,7 +566,6 @@ class obx_market extends CModule {
 			'SORT' => 100,
 			'PROPERTY_TYPE' => 'C',
 			'ACTIVE' => 'Y',
-			'IS_SYS' => 'Y',
 			'ACCESS' => 'R',
 			'IS_SYS' => 'Y',
 			OBX_MAGIC_WORD => 'Y'
@@ -546,7 +577,6 @@ class obx_market extends CModule {
 			'SORT' => 100,
 			'PROPERTY_TYPE' => 'L',
 			'ACTIVE' => 'Y',
-			'IS_SYS' => 'Y',
 			'ACCESS' => 'W',
 			'IS_SYS' => 'Y',
 			OBX_MAGIC_WORD => 'Y'
@@ -572,7 +602,6 @@ class obx_market extends CModule {
 			'SORT' => 100,
 			'PROPERTY_TYPE' => 'L',
 			'ACTIVE' => 'Y',
-			'IS_SYS' => 'Y',
 			'ACCESS' => 'W',
 			'IS_SYS' => 'Y',
 			OBX_MAGIC_WORD => 'Y'

@@ -273,6 +273,14 @@ SQL
 	}
 
 	protected function _onStartUpdate(&$arFields){
+		// [pronix]
+		// передаем параметр __NOT_UPDATE_UNIQUE_FIELDS = true
+		// исключаем тем самым дублирование записей при обновлении товара в заказе
+		// а так же исключаем возможность поменять у товара корзины собственно PRODUCT_ID и BASKET_ID
+		// однако предусмотрим явное задание через OBX_MAGIC_WORD
+		if( !array_key_exists(OBX_MAGIC_WORD, $arFields)) {
+			$arFields['__NOT_UPDATE_UNIQUE_FIELDS'] = true;
+		}
 		if( array_key_exists('TOTAL_PRICE_VALUE', $arFields) ) {
 			unset($arFields['TOTAL_PRICE_VALUE']);
 		}
@@ -475,21 +483,6 @@ SQL
 		// ^^^ check TOTAL_PRICE_VALUE
 		}
 		return parent::_onBeforeExecUpdate($arFields, $arCheckData);
-	}
-
-	public function update($arFields) {
-		// [pronix]
-		// передаем параметр $bNotUpdateUniqueFields = true
-		// исключаем тем самым дублирование записей при обновлении товара в заказе
-		// а так же исключаем возможность поменять у товара корзины собственно PRODUCT_ID и BASKET_ID
-		// однако предусмотрим явное задание через OBX_MAGIC_WORD
-		if( array_key_exists(OBX_MAGIC_WORD, $arFields)) {
-			return parent::update($arFields, false);
-		}
-		else {
-			return parent::update($arFields, true);
-		}
-
 	}
 
 	/*public function onIBlockDelete($IBLOCK_ID) {

@@ -15,12 +15,12 @@ use OBX\Core\DBSimple\EntityStatic;
 /**
  * Class ECommerceIBlock
  * @package OBX\Market
- * @method @static \CDBResult getFullList($bResultCDBResult = false)
- * @method @static void clearCachedList()
- * @method @static array getCachedList()
- * @method @static void onIBlockDelete($ID)
- * @method @static void registerModuleDependencies()
- * @method @static void unRegisterModuleDependencies()
+ * @method static \CDBResult getFullList($bResultCDBResult = false)
+ * @method static void clearCachedList()
+ * @method static array getCachedList()
+ * @method static void onIBlockDelete($ID)
+ * @method static void registerModuleDependencies()
+ * @method static void unRegisterModuleDependencies()
  */
 class ECommerceIBlock extends EntityStatic {}
 ECommerceIBlock::__initEntity(ECommerceIBlockDBS::getInstance());
