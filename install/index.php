@@ -214,6 +214,11 @@ class obx_market extends CModule {
 	}
 
 	private function explicitIncludeModuleClasses() {
+		require_once __DIR__.'/../../obx.core/lib/imessagepool.php';
+		require_once __DIR__.'/../../obx.core/lib/imessagepoolstatic.php';
+		require_once __DIR__.'/../../obx.core/lib/messagepool.php';
+		require_once __DIR__.'/../../obx.core/lib/messagepooldecorator.php';
+		require_once __DIR__.'/../../obx.core/lib/messagepoolstatic.php';
 		require_once __DIR__.'/../../obx.core/lib/dbsimple/ientity.php';
 		require_once __DIR__.'/../../obx.core/lib/dbsimple/ientitystatic.php';
 		require_once __DIR__.'/../../obx.core/lib/dbsimple/entity.php';
@@ -656,8 +661,51 @@ class obx_market extends CModule {
 		}
 		return $modCurDir;
 	}
+	static public function readVersion($version) {
+		$regVersion = (
+			'~^'.(
+				'(?:'.(
+					'('.(
+						'(?:[a-zA-Z0-9]{1,}\.)?'
+						.'(?:[a-zA-Z0-9]{1,})'
+					).')'
+					.'\-'
+				).')?'
+				.'([\d]{1,2})\.([\d]{1,2})\.([\d]{1,2})'.'(?:\-r([\d]{1,4}))?'
+			).'$~'
+		);
+		$arVersion = array();
+		if( preg_match($regVersion, $version, $arMatches) ) {
+			$arVersion['NAME'] = $arMatches[1];
+			$arVersion['MAJOR'] = $arMatches[2];
+			$arVersion['MINOR'] = $arMatches[3];
+			$arVersion['FIXES'] = $arMatches[4];
+			$arVersion['REVISION'] = 0;
+			$arVersion['VERSION'] = $arMatches[2].'.'.$arMatches[3].'.'.$arMatches[4];
+			if($arMatches[5]) {
+				$arVersion['REVISION'] = $arMatches[5];
+				$arVersion['VERSION'] .= '-r'.$arVersion['REVISION'];
+			}
+			$arVersion['RAW_VERSION'] =
+				($arVersion['MAJOR'] *   1000000000)
+				+ ($arVersion['MINOR'] * 10000000)
+				+ ($arVersion['FIXES'] * 10000)
+				+ ($arVersion['REVISION'])
+			;
+		}
+		return $arVersion;
+	}
+
+	static public function compareVersions($versionA, $versionB) {
+		$arVersionA = self::readVersion($versionA);
+		$arVersionB = self::readVersion($versionB);
+		if($arVersionA['RAW_VERSION'] == $arVersionB['RAW_VERSION']) return 0;
+		return ($arVersionA['RAW_VERSION'] < $arVersionB['RAW_VERSION'])? -1 : 1;
+	}
 	static public function includeLangFile() {
+		/** @noinspection PhpUnusedLocalVariableInspection */
 		global $MESS;
-		@include(GetLangFileName(self::getModuleCurDir() . "/lang/", "/install/index.php"));
+		/** @noinspection PhpIncludeInspection */
+		@include(self::getModuleCurDir().'/lang/'.LANGUAGE_ID.'/install/index.php');
 	}
 }
