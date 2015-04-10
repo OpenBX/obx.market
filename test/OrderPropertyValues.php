@@ -1,12 +1,11 @@
-array_key_exists<?php
-/***********************************************
- ** @product OpenBX:Market Bitrix Module      **
- ** @authors                                  **
- **         Maksim S. Makarov aka pr0n1x      **
- ** @license Affero GPLv3                     **
- ** @mailto rootfavell@gmail.com              **
- ** @copyright 2013 DevTop                    **
- ***********************************************/
+<?php
+/**
+ * @product OpenBX:Market Bitrix Module
+ * @author Maksim S. Makarov aka pr0n1x
+ * @license Affero GPLv3
+ * @mailto rootfavell@gmail.com
+ * @copyright 2013 DevTop
+ */
 
 require_once dirname(__FILE__).'/_OrderProperty.php';
 

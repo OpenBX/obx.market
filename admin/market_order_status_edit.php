@@ -1,12 +1,11 @@
 <?php
-/******************************************
- ** @product OpenBX:Market Bitrix Module **
- ** @authors                             **
- **         Maksim S. Makarov            **
- ** @license Affero GPLv3                **
- ** @mailto rootfavell@gmail.com         **
- ** @copyright 2013 DevTop               **
- ******************************************/
+/**
+ * @product OpenBX:Market Bitrix Module
+ * @author Maksim S. Makarov
+ * @license Affero GPLv3
+ * @mailto rootfavell@gmail.com
+ * @copyright 2013 DevTop
+ */
 
 use OBX\Market\CurrencyFormatDBS;
 use OBX\Market\Order;

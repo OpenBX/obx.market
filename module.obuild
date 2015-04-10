@@ -1,10 +1,9 @@
-#########################################
-## @product OBX:Market Bitrix Module   ##
-## @authors                            ##
-##        Maksim S. Makarov aka pr0n1x ##
-## @license Affero GPLv3               ##
-## @mail rootfavell@gmail.com          ##
-#########################################
+##
+## @product OBX:Market Bitrix Module
+## @author Maksim S. Makarov aka pr0n1x
+## @license Affero GPLv3
+## @mail rootfavell@gmail.com
+##
 
 [RESOURCES]
 	%INSTALL_FOLDER%/admin/ :: obx_market_*.php :: %BX_ROOT%/admin/

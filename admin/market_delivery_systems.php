@@ -1,12 +1,11 @@
 <?php
-/******************************************
- ** @product OpenBX:Market Bitrix Module **
- ** @authors                             **
- **         Maksim S. Makarov            **
- ** @license Affero GPLv3                **
- ** @mailto rootfavell@gmail.com         **
- ** @copyright 2013 DevTop               **
- ******************************************/
+/**
+ * @product OpenBX:Market Bitrix Module
+ * @author Maksim S. Makarov
+ * @license Affero GPLv3
+ * @mailto rootfavell@gmail.com
+ * @copyright 2013 DevTop
+ */
 
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
