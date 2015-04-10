@@ -18,7 +18,7 @@ IncludeModuleLangFile(__FILE__);
 class OrderCommentDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'OrderCommentRow';
+	protected $_entityID = 'OrderCommentRow';
 
 	protected $_arTableList = array(
 		'OC' => 'obx_order_comments'

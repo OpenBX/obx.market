@@ -18,7 +18,7 @@ IncludeModuleLangFile(__FILE__);
 class CIBlockPropertyPriceDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'IBlockPropertyPriceLink';
+	protected $_entityID = 'IBlockPropertyPriceLink';
 	protected $_arTableDefaultFields = array();
 	protected $_arTableList = array(
 		'P'		=> 'obx_price',

@@ -22,7 +22,7 @@ IncludeModuleLangFile(__FILE__);
 class CurrencyFormatDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'CurrencyFormatRow';
+	protected $_entityID = 'CurrencyFormatRow';
 	protected $_mainTable = 'F';
 	protected $_arTableList = array(
 		'C' => 'obx_currency',

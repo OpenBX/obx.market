@@ -17,7 +17,7 @@ IncludeModuleLangFile(__FILE__);
 
 class CurrencyDBS extends Entity {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'Currency';
+	protected $_entityID = 'Currency';
 	protected $_arTableList = array(
 		'C' => 'obx_currency'
 	);

@@ -20,7 +20,7 @@ IncludeModuleLangFile(__FILE__);
  */
 class OrderStatusDBS extends Entity {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'OrderStatusRow';
+	protected $_entityID = 'OrderStatusRow';
 	protected $_mainTable = 'S';
 	protected $_mainTablePrimaryKey = 'ID';
 	protected $_mainTableAutoIncrement = 'ID';

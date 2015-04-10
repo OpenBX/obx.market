@@ -19,7 +19,7 @@ IncludeModuleLangFile(__FILE__);
 class BasketDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'BasketRow';
+	protected $_entityID = 'BasketRow';
 	protected $_mainTable = 'B';
 	protected $_arTableList = array(
 		'B' => array('NAME' => 'obx_basket'),

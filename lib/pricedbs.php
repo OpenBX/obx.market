@@ -23,7 +23,7 @@ class PriceDBS extends Entity {
 	const DEFAULT_PRICE_GROUP = "2";
 
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'PriceRow';
+	protected $_entityID = 'PriceRow';
 
 	protected $_mainTable = 'P';
 	protected $_arTableList = array(

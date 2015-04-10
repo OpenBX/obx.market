@@ -21,7 +21,7 @@ class OrderPropertyEnumDBS extends Entity
 {
 
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'OrderPropertyEnumRow';
+	protected $_entityID = 'OrderPropertyEnumRow';
 	protected $_arTableList = array(
 		'OPE' => 'obx_order_property_enum',
 		'OP' => 'obx_order_property'

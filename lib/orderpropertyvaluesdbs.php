@@ -21,7 +21,7 @@ IncludeModuleLangFile(__FILE__);
 class OrderPropertyValuesDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'OrderPropertyValueRow';
+	protected $_entityID = 'OrderPropertyValueRow';
 	protected $_arTableList = array(
 		'O' => 'obx_orders',
 		'OP' => 'obx_order_property',

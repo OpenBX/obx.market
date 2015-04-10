@@ -18,7 +18,7 @@ IncludeModuleLangFile(__FILE__);
 class ECommerceIBlockDBS extends Entity
 {
 	protected $_entityModuleID = 'obx.market';
-	protected $_entityEventsID = 'ECommerceIBlockLink';
+	protected $_entityID = 'ECommerceIBlockLink';
 	protected $_arTableList = array(
 		'E' => 'obx_ecom_iblock',
 		'B' => 'b_iblock',
