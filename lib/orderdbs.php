@@ -302,7 +302,10 @@ SQL
 	protected function _onAfterDelete(&$arOrder) {
 		$arFilter = array("ORDER_ID" => $arOrder["ID"]);
 		OrderPropertyValuesDBS::getInstance()->deleteByFilter($arFilter);
-		BasketItemDBS::getInstance()->deleteByFilter($arFilter);
+		$arBasketsList = BasketDBS::getInstance()->getListArray(array(), $arFilter);
+		foreach($arBasketsList as &$arBasket) {
+			BasketDBS::getInstance()->delete($arBasket['ID']);
+		}
 		return true;
 	}
 
