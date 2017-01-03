@@ -221,6 +221,7 @@ class obx_market extends CModule {
 		require_once __DIR__.'/../../obx.core/lib/dbsimple/ientitystatic.php';
 		require_once __DIR__.'/../../obx.core/lib/dbsimple/entity.php';
 		require_once __DIR__.'/../../obx.core/lib/dbsimple/entitystatic.php';
+		require_once __DIR__.'/../../obx.core/lib/dbsimple/dbresult.php';
 		require_once __DIR__.'/../lib/currencydbs.php';
 		require_once __DIR__.'/../lib/currency.php';
 		require_once __DIR__.'/../lib/currencyformatdbs.php';
