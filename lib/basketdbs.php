@@ -222,4 +222,10 @@ SQL
 	protected function _onBeforeExecUpdate(&$arFields, &$arCheckResult) {
 		return true;
 	}
+
+	protected function _onAfterDelete(&$arBasket) {
+		$arFilter = array("BASKET_ID" => $arBasket["ID"]);
+		BasketItemDBS::getInstance()->deleteByFilter($arFilter);
+		return true;
+	}
 }
